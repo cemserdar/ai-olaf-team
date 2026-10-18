@@ -50,6 +50,15 @@ alias olaf-init="bash \$AI_OLAF_TEAM_DIR/scripts/olaf-init.sh"
 EOF
 )
 
+# Profil dosyalarının varlığını garantiye al (macOS / Linux uyumluluğu)
+if [ ! -f "$HOME/.bashrc" ] && [ ! -f "$HOME/.zshrc" ]; then
+    if [ "$(uname -s)" = "Darwin" ] || [ "$SHELL" = "*/zsh" ]; then
+        touch "$HOME/.zshrc"
+    else
+        touch "$HOME/.bashrc"
+    fi
+fi
+
 # ~/.bashrc Kontrolü
 if [ -f "$HOME/.bashrc" ]; then
     if grep -q "AI OLAF TEAM GLOBAL INTEGRATION" "$HOME/.bashrc"; then
@@ -60,13 +69,21 @@ if [ -f "$HOME/.bashrc" ]; then
     fi
 fi
 
-# ~/.zshrc Kontrolü
+# ~/.zshrc Kontrolü (macOS varsayılan kabuğu Zsh)
 if [ -f "$HOME/.zshrc" ]; then
     if grep -q "AI OLAF TEAM GLOBAL INTEGRATION" "$HOME/.zshrc"; then
         echo -e "${COLOR_YELLOW}✓ ~/.zshrc içinde zaten tanımlı, güncellenmedi.${COLOR_RESET}"
     else
         echo "$CONFIG_SNIPPET" >> "$HOME/.zshrc"
         echo -e "${COLOR_GREEN}✓ ~/.zshrc dosyasına olaf-init alias ve PATH eklendi.${COLOR_RESET}"
+    fi
+fi
+
+# macOS için ~/.zprofile kontrolü (login shell desteği)
+if [ "$(uname -s)" = "Darwin" ] && [ -f "$HOME/.zprofile" ]; then
+    if ! grep -q "AI OLAF TEAM GLOBAL INTEGRATION" "$HOME/.zprofile"; then
+        echo "$CONFIG_SNIPPET" >> "$HOME/.zprofile"
+        echo -e "${COLOR_GREEN}✓ ~/.zprofile dosyasına olaf-init alias ve PATH eklendi.${COLOR_RESET}"
     fi
 fi
 

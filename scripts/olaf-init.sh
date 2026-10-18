@@ -90,7 +90,8 @@ for item in "${AGENTS_LIST[@]}"; do
     
     if [ ! -f "$SKILL_FILE" ]; then
         if [ -f "$TEMPLATE_SKILL" ]; then
-            sed -e "s|{{AGENT_NAME}}|${key^^} AGENT|g" \
+            KEY_UPPER=$(echo "$key" | tr '[:lower:]' '[:upper:]')
+            sed -e "s|{{AGENT_NAME}}|${KEY_UPPER} AGENT|g" \
                 -e "s|{{AGENT_ROLE}}|$role|g" \
                 -e "s|{{AGENT_TAG}}|$tag|g" \
                 -e "s|{{LAST_UPDATED}}|$CURRENT_DATE|g" \
@@ -334,10 +335,12 @@ if [ -f ".olaf/memory/project-brain.md" ]; then
     LAST_MSG=$(git log -1 --format="%s" 2>/dev/null)
     LAST_DATE=$(git log -1 --format="%cd" --date=format:'%Y-%m-%d %H:%M:%S' 2>/dev/null)
     
-    # Geçici dosyaya yazıp project-brain içine güncelle
-    sed -i "s/Son Commit ID:.*/Son Commit ID: $LAST_HASH/g" .olaf/memory/project-brain.md 2>/dev/null || true
-    sed -i "s/Son Commit Mesajı:.*/Son Commit Mesajı: $LAST_MSG/g" .olaf/memory/project-brain.md 2>/dev/null || true
-    sed -i "s/Son Değişiklik Tarihi:.*/Son Değişiklik Tarihi: $LAST_DATE/g" .olaf/memory/project-brain.md 2>/dev/null || true
+    # Geçici dosyaya yazıp project-brain içine güncelle (macOS ve Linux uyumlu)
+    sed -e "s/Son Commit ID:.*/Son Commit ID: $LAST_HASH/g" \
+        -e "s/Son Commit Mesajı:.*/Son Commit Mesajı: $LAST_MSG/g" \
+        -e "s/Son Değişiklik Tarihi:.*/Son Değişiklik Tarihi: $LAST_DATE/g" \
+        .olaf/memory/project-brain.md > .olaf/memory/project-brain.tmp 2>/dev/null && \
+        mv .olaf/memory/project-brain.tmp .olaf/memory/project-brain.md 2>/dev/null || true
 fi
 EOF
     chmod +x "$HOOK_FILE"

@@ -1,7 +1,7 @@
 # 🚀 AI OLAF TEAM - Otonom, Projeden Bağımsız ve Kendi Kendini Eğiten (Self-Training) 15 Kişilik Yazılım Takımı
 
 [![License: MIT](https://img.shields.io/badge/Lisans-MIT-blue.svg)](LICENSE)
-[![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%7C%20Ubuntu%20%7C%20Fedora%20%7C%20CachyOS-orange.svg)]()
+[![Platform: Cross-Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)]()
 [![IDE: Antigravity & VS Code](https://img.shields.io/badge/IDE-Antigravity%20%7C%20VS%20Code%20%7C%20Cursor-purple.svg)]()
 [![Agents: 15 Experts](https://img.shields.io/badge/Ekip-15%20Uzman%20Ajan-brightgreen.svg)]()
 
@@ -91,8 +91,12 @@ git remote add origin git@github.com:KULLANICI_ADINIZ/ai-olaf-team.git
 git push -u origin main
 ```
 
-### 2. Adım: Global Alias Kurulumunu Yapın
-Bu komut, sisteminizdeki `~/.bashrc` ve `~/.zshrc` dosyalarına `olaf-init` komutunu ve PATH değişkenini ekler:
+### 2. Adım: Global Komut Kurulumunu Yapın (`olaf-init`)
+
+Sisteminizin türüne göre ilgili kurulum betiğini bir defa çalıştırın:
+
+#### 🐧 Linux & 🍎 macOS (Bash / Zsh):
+Bu komut `~/.local/bin`, `~/.bashrc`, `~/.zshrc` ve macOS `~/.zprofile` dosyalarınıza `olaf-init` komutunu ve PATH ayarlarını ekler:
 ```bash
 bash ~/ai-olaf-team/scripts/install-global-alias.sh
 
@@ -100,16 +104,27 @@ bash ~/ai-olaf-team/scripts/install-global-alias.sh
 source ~/.bashrc   # veya zsh kullanıyorsanız: source ~/.zshrc
 ```
 
+#### 🪟 Windows (PowerShell / Windows Terminal):
+PowerShell yönetici olmadan da çalışır; `$PROFILE` ve Kullanıcı PATH ortam değişkenine `olaf-init` komutunu ekler:
+```powershell
+powershell -ExecutionPolicy Bypass -File "$HOME\ai-olaf-team\scripts\install-global-alias.ps1"
+
+# Terminali kapatıp açın veya profilinizi yenileyin:
+. $PROFILE
+```
+*(CMD kullanıcıları için `olaf-init.cmd` başlatıcısı otomatik olarak PATH dizinine yerleştirilir.)*
+
 ### 3. Adım: İkinci Bilgisayarınızda (Örn: Laptop) Repoyu Klonlayın
 ```bash
-# Laptop terminalinde ev dizinine klonlayın
+# Linux / macOS:
 cd ~
 git clone git@github.com:KULLANICI_ADINIZ/ai-olaf-team.git
+cd ~/ai-olaf-team && bash scripts/install-global-alias.sh
 
-# Global komutu aktif edin
-cd ~/ai-olaf-team
-bash scripts/install-global-alias.sh
-source ~/.bashrc   # veya source ~/.zshrc
+# Windows (PowerShell):
+cd $HOME
+git clone git@github.com:KULLANICI_ADINIZ/ai-olaf-team.git
+cd $HOME\ai-olaf-team; powershell -ExecutionPolicy Bypass -File scripts\install-global-alias.ps1
 ```
 
 > **🔄 Senkronizasyon İpucu:** Masaüstünde bir ajanın genel DNA'sını (`base-agents/`) güncellediğinizde `git push` yapın, laptopunuza geçtiğinizde `git pull` yaparak ekibinizi her an güncel tutun!
@@ -271,8 +286,11 @@ yaptığınız anda, 15 kişilik ekibiniz diğer bilgisayarda öğrendiği her �
 │   ├── project-brain-template.md   # Projenin mimari beyni ve teknoloji haritası şablonu
 │   └── active-sprint-template.md   # Aktif görev ve ajan takip tahtası şablonu
 ├── scripts/
-│   ├── olaf-init.sh                # Herhangi bir projeye takımı bağlayan entegrasyon betiği
-│   └── install-global-alias.sh     # Sisteme 'olaf-init' global komutunu ekleyen sihirbaz
+│   ├── olaf-init.sh                # Linux & macOS: Projeye takımı bağlayan entegrasyon betiği (Bash)
+│   ├── install-global-alias.sh     # Linux & macOS: Sisteme 'olaf-init' global komutunu ekleyen sihirbaz
+│   ├── olaf-init.ps1               # Windows: PowerShell ile projeye takımı bağlayan entegrasyon motoru
+│   ├── olaf-init.cmd               # Windows: CMD / Terminal tek tık başlatıcısı
+│   └── install-global-alias.ps1    # Windows: PowerShell Profiline ve PATH'e 'olaf-init' ekleyen sihirbaz
 ├── .gitignore                      # Git yoksayma kuralları
 └── README.md                       # Çok detaylı Türkçe Kullanım ve Senkronizasyon Kılavuzu
 ```
