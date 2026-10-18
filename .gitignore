@@ -1,0 +1,34 @@
+# İşletim Sistemi Geçici Dosyaları
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# Log Dosyaları
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test ve Geçici Çıktılar
+tmp/
+temp/
+scratch/
+
+# Yerel Testler Sonucu Oluşabilecek Klasörler
+node_modules/
+.olaf/
+.agent/
+.idx/
+.gemini/
+.cursorrules
+.clinerules
+AGENTS.md
+GEMINI.md
+
+# IDE Konfigürasyonları
+.idea/
+*.suo
+*.user
