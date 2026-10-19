@@ -1,0 +1,6 @@
+# Git line ending and encoding configuration
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.sh text eol=lf
+*.md text eol=lf

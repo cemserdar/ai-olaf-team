@@ -1,4 +1,4 @@
-<#
+﻿<#
 ==============================================================================
 AI OLAF TEAM - OTONOM YAZILIM TAKIMI PROJE ENTEGRASYON MOTORU (olaf-init.ps1)
 ==============================================================================
@@ -12,6 +12,12 @@ köprülerini Windows ortamında kurar.
 param()
 
 $ErrorActionPreference = "Stop"
+
+# UTF-8 Konsol Çıktısı Uyumluluğu (Windows PowerShell 5.1 & PowerShell 7+)
+try {
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+} catch {}
+$OutputEncoding = [System.Text.Encoding]::UTF8
 
 # ANSI Renk Kodları veya Düz Metin Uyumluluğu (Windows PowerShell 5.1 & Terminal)
 $supportsAnsi = $false
@@ -61,10 +67,12 @@ $scriptPath = if ($PSScriptRoot) {
     $null
 }
 
+$parentScriptDir = if ($scriptPath) { Split-Path -Parent $scriptPath } else { $null }
+
 $candidates = @(
     $env:AI_OLAF_TEAM_DIR,
     [Environment]::GetEnvironmentVariable("AI_OLAF_TEAM_DIR", "User"),
-    (if ($scriptPath) { Split-Path -Parent $scriptPath } else { $null }),
+    $parentScriptDir,
     "$HOME\ai-olaf-team",
     "$HOME\Desktop\ai-olaf-team",
     "$HOME\Masaüstü\ai-olaf-team"
