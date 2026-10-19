@@ -168,8 +168,15 @@ if ((-not (Test-Path -LiteralPath $activeSprintFile)) -and (Test-Path -LiteralPa
 # 5. PROJE TÜRÜNÜ TESPİT ET (BROWNFIELD / GREENFIELD)
 Write-Host "`n$cBlue🔍 Proje Röntgeni Çekiliyor ve Kod Taraması Yapılıyor...$cReset"
 
-$sourceExtensions = @("*.cs", "*.java", "*.ts", "*.tsx", "*.js", "*.py", "*.go", "*.rs", "*.php", "*.cpp", "package.json", "pom.xml", "*.csproj", "*.sln")
-$excludeDirSet = @(".olaf", ".git", "node_modules", "bin", "obj", ".vs", "dist", "build", ".next", ".nuxt", "vendor")
+$sourceExtensions = @(
+    "*.cs", "*.java", "*.kt", "*.kts", "*.dart", "*.swift", "*.m", "*.h", "*.cpp", "*.c",
+    "*.ts", "*.tsx", "*.js", "*.jsx", "*.vue", "*.svelte", "*.html",
+    "*.py", "*.go", "*.rs", "*.php", "*.rb",
+    "package.json", "pom.xml", "build.gradle*", "settings.gradle*", "*.csproj", "*.sln",
+    "AndroidManifest.xml", "pubspec.yaml", "Cargo.toml", "go.mod", "requirements.txt",
+    "Pipfile", "pyproject.toml", "composer.json", "Gemfile"
+)
+$excludeDirSet = @(".olaf", ".git", "node_modules", "bin", "obj", ".vs", "dist", "build", ".next", ".nuxt", "vendor", ".gradle", ".idea", "Pods", ".dart_tool")
 
 $srcFiles = @()
 
@@ -193,13 +200,13 @@ try {
     }
     if ($subDirs) {
         foreach ($dir in $subDirs) {
-            $subFiles = Get-ChildItem -LiteralPath $dir.FullName -Recurse -File -Depth 3 -ErrorAction SilentlyContinue
+            $subFiles = Get-ChildItem -LiteralPath $dir.FullName -Recurse -File -Depth 10 -ErrorAction SilentlyContinue
             if ($subFiles) {
                 foreach ($file in $subFiles) {
                     $fullName = $file.FullName
                     $isExcluded = $false
                     foreach ($ex in $excludeDirSet) {
-                        if ($fullName -match "[\\/]$([regex]::Escape($ex))([\\/]|$)") {
+                        if ($fullName -match "[\\/]($([regex]::Escape($ex)))[\\/]") {
                             $isExcluded = $true
                             break
                         }
@@ -236,8 +243,33 @@ if ($isBrownfield) {
     
     Write-Host "$cBlue📋 Paket ve Teknoloji Analizi Yapılıyor...$cReset"
     
+    # Android (Kotlin / Java / Gradle)
+    $hasAndroidDir = Test-Path -LiteralPath (Join-Path $targetDir "android")
+    $hasAppGradle = (Test-Path -LiteralPath (Join-Path $targetDir "app\build.gradle")) -or (Test-Path -LiteralPath (Join-Path $targetDir "android\app\build.gradle"))
+    $hasManifest = (Get-ChildItem -LiteralPath $targetDir -Filter "AndroidManifest.xml" -Recurse -Depth 5 -ErrorAction SilentlyContinue | Select-Object -First 1)
+    $hasKotlin = (Get-ChildItem -LiteralPath $targetDir -Filter "*.kt" -Recurse -Depth 8 -ErrorAction SilentlyContinue | Select-Object -First 1)
+
+    if ($hasAndroidDir -or $hasAppGradle -or $hasManifest) {
+        $lang = if ($hasKotlin) { "Kotlin (Android Native)" } else { "Java (Android Native)" }
+        $detectedStack += "- Mobil: Android Projesi tespit edildi ($lang).`n"
+        $detectedStack += "  * Gradle derleme altyapısı ve Android manifest mevcut.`n"
+        if ($hasKotlin) {
+            $detectedStack += "  * Diller: Kotlin (*.kt)`n"
+        }
+    }
+
+    # Flutter
+    if (Test-Path -LiteralPath (Join-Path $targetDir "pubspec.yaml")) {
+        $detectedStack += "- Mobil/Cross-Platform: Flutter projesi tespit edildi (pubspec.yaml).`n"
+    }
+
+    # iOS / Swift
+    if ((Test-Path -LiteralPath (Join-Path $targetDir "Podfile")) -or (Get-ChildItem -LiteralPath $targetDir -Filter "*.xcodeproj" -Depth 2 -ErrorAction SilentlyContinue)) {
+        $detectedStack += "- Mobil: iOS Projesi tespit edildi (Xcode / CocoaPods).`n"
+    }
+
     # .NET / C#
-    $csprojFiles = Get-ChildItem -LiteralPath $targetDir -Filter "*.csproj" -Recurse -Depth 3 -ErrorAction SilentlyContinue | Select-Object -First 5
+    $csprojFiles = Get-ChildItem -LiteralPath $targetDir -Filter "*.csproj" -Recurse -Depth 5 -ErrorAction SilentlyContinue | Select-Object -First 5
     $slnFiles = Get-ChildItem -LiteralPath $targetDir -Filter "*.sln" -Depth 2 -ErrorAction SilentlyContinue
     if ($csprojFiles -or $slnFiles) {
         $detectedStack += "- Backend: .NET / C# tespit edildi.`n"
@@ -268,8 +300,8 @@ if ($isBrownfield) {
         }
     }
     
-    # Java
-    if ((Test-Path -LiteralPath (Join-Path $targetDir "pom.xml")) -or (Test-Path -LiteralPath (Join-Path $targetDir "build.gradle"))) {
+    # Java (Maven / Gradle)
+    if ((Test-Path -LiteralPath (Join-Path $targetDir "pom.xml")) -or (Test-Path -LiteralPath (Join-Path $targetDir "build.gradle")) -or (Test-Path -LiteralPath (Join-Path $targetDir "build.gradle.kts"))) {
         $detectedStack += "- Java Ekosistemi tespit edildi (Maven/Gradle).`n"
     }
     
@@ -278,6 +310,21 @@ if ($isBrownfield) {
         $detectedStack += "- Python Ekosistemi tespit edildi.`n"
     }
     
+    # Go
+    if (Test-Path -LiteralPath (Join-Path $targetDir "go.mod")) {
+        $detectedStack += "- Backend: Go Ekosistemi tespit edildi (go.mod).`n"
+    }
+
+    # Rust
+    if (Test-Path -LiteralPath (Join-Path $targetDir "Cargo.toml")) {
+        $detectedStack += "- Sistem/Backend: Rust Ekosistemi tespit edildi (Cargo.toml).`n"
+    }
+
+    # PHP
+    if (Test-Path -LiteralPath (Join-Path $targetDir "composer.json")) {
+        $detectedStack += "- Web/Backend: PHP Ekosistemi tespit edildi (composer.json).`n"
+    }
+
     # Docker
     if ((Test-Path -LiteralPath (Join-Path $targetDir "Dockerfile")) -or (Test-Path -LiteralPath (Join-Path $targetDir "docker-compose.yml"))) {
         $detectedStack += "- DevOps: Docker / Docker Compose mevcut.`n"
@@ -317,14 +364,15 @@ if (Test-Path -LiteralPath $templateBrainPath) {
     $brainContent = $brainContent.Replace("{{PROJECT_GOAL}}", "$projectName projesinin hedefleri ve isterleri")
     $brainContent = $brainContent.Replace("{{TARGET_AUDIENCE}}", "Kullanıcılar ve Sistem İstemcileri")
 
+    $codeFence = '```'
     $brainContent += @"
 
 ### 🔎 OLAF-INIT İLK RÖNTGEN BULGULARI:
 $detectedStack
 ### 📁 TESPİT EDİLEN KLASÖR AĞACI:
-```text
+$codeFence
 $treeSummary
-```
+$codeFence
 "@
     [System.IO.File]::WriteAllText($brainFile, $brainContent, $utf8NoBom)
 }

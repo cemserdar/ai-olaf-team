@@ -115,12 +115,16 @@ fi
 # 5. PROJE TÜRÜNÜ TESPİT ET (BROWNFIELD / GREENFIELD)
 echo -e "\n${COLOR_BLUE}🔍 Proje Röntgeni Çekiliyor ve Kod Taraması Yapılıyor...${COLOR_RESET}"
 
-SRC_COUNT=$(find . -maxdepth 4 -type f \( \
-    -name "*.cs" -o -name "*.java" -o -name "*.ts" -o -name "*.tsx" -o \
-    -name "*.js" -o -name "*.py" -o -name "*.go" -o -name "*.rs" -o \
-    -name "*.php" -o -name "*.cpp" -o -name "package.json" -o \
-    -name "pom.xml" -o -name "*.csproj" -o -name "*.sln" \
-\) ! -path "*/.olaf/*" ! -path "*/.git/*" ! -path "*/node_modules/*" ! -path "*/bin/*" ! -path "*/obj/*" 2>/dev/null | wc -l)
+SRC_COUNT=$(find . -maxdepth 10 -type f \( \
+    -name "*.cs" -o -name "*.java" -o -name "*.kt" -o -name "*.kts" -o \
+    -name "*.dart" -o -name "*.swift" -o -name "*.ts" -o -name "*.tsx" -o \
+    -name "*.js" -o -name "*.jsx" -o -name "*.py" -o -name "*.go" -o \
+    -name "*.rs" -o -name "*.php" -o -name "*.cpp" -o -name "*.c" -o \
+    -name "*.vue" -o -name "*.svelte" -o -name "package.json" -o \
+    -name "pom.xml" -o -name "*.csproj" -o -name "*.sln" -o \
+    -name "build.gradle" -o -name "build.gradle.kts" -o -name "AndroidManifest.xml" -o \
+    -name "pubspec.yaml" -o -name "Cargo.toml" -o -name "go.mod" -o -name "requirements.txt" \
+\) ! -path "*/.olaf/*" ! -path "*/.git/*" ! -path "*/node_modules/*" ! -path "*/bin/*" ! -path "*/obj/*" ! -path "*/build/*" ! -path "*/.gradle/*" 2>/dev/null | wc -l)
 
 IS_BROWNFIELD=false
 if [ "$SRC_COUNT" -gt 0 ]; then
@@ -142,10 +146,30 @@ if [ "$IS_BROWNFIELD" = true ]; then
     # Derin Röntgen Bilgilerini Topla
     echo -e "${COLOR_BLUE}📋 Paket ve Teknoloji Analizi Yapılıyor...${COLOR_RESET}"
     
+    # Android (Kotlin / Java / Gradle)
+    if [ -d "android" ] || [ -f "app/build.gradle" ] || [ -f "android/app/build.gradle" ] || find . -maxdepth 5 -name "AndroidManifest.xml" 2>/dev/null | grep -q .; then
+        if find . -maxdepth 8 -name "*.kt" 2>/dev/null | grep -q .; then
+            DETECTED_STACK+="- Mobil: Android Projesi tespit edildi (Kotlin (Android Native))."$'\n'
+        else
+            DETECTED_STACK+="- Mobil: Android Projesi tespit edildi (Java (Android Native))."$'\n'
+        fi
+        DETECTED_STACK+="  * Gradle derleme altyapısı ve Android manifest mevcut."$'\n'
+    fi
+
+    # Flutter
+    if [ -f "pubspec.yaml" ]; then
+        DETECTED_STACK+="- Mobil/Cross-Platform: Flutter projesi tespit edildi (pubspec.yaml)."$'\n'
+    fi
+
+    # iOS
+    if [ -f "Podfile" ] || ls *.xcodeproj 1> /dev/null 2>&1; then
+        DETECTED_STACK+="- Mobil: iOS Projesi tespit edildi (Xcode / CocoaPods)."$'\n'
+    fi
+
     # .NET / C#
-    if ls *.sln 1> /dev/null 2>&1 || ls *.csproj 1> /dev/null 2>&1 || find . -maxdepth 3 -name "*.csproj" | grep -q .; then
+    if ls *.sln 1> /dev/null 2>&1 || ls *.csproj 1> /dev/null 2>&1 || find . -maxdepth 4 -name "*.csproj" 2>/dev/null | grep -q .; then
         DETECTED_STACK+="- Backend: .NET / C# tespit edildi."$'\n'
-        CSPROJ_FILES=$(find . -maxdepth 3 -name "*.csproj" 2>/dev/null | head -n 5)
+        CSPROJ_FILES=$(find . -maxdepth 4 -name "*.csproj" 2>/dev/null | head -n 5)
         for csproj in $CSPROJ_FILES; do
             DETECTED_STACK+="  * Proje: $csproj"$'\n'
         done
@@ -167,13 +191,28 @@ if [ "$IS_BROWNFIELD" = true ]; then
     fi
     
     # Java
-    if [ -f "pom.xml" ] || [ -f "build.gradle" ]; then
+    if [ -f "pom.xml" ] || [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
         DETECTED_STACK+="- Java Ekosistemi tespit edildi (Maven/Gradle)."$'\n'
     fi
     
     # Python
     if [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
         DETECTED_STACK+="- Python Ekosistemi tespit edildi."$'\n'
+    fi
+
+    # Go
+    if [ -f "go.mod" ]; then
+        DETECTED_STACK+="- Backend: Go Ekosistemi tespit edildi (go.mod)."$'\n'
+    fi
+
+    # Rust
+    if [ -f "Cargo.toml" ]; then
+        DETECTED_STACK+="- Sistem/Backend: Rust Ekosistemi tespit edildi (Cargo.toml)."$'\n'
+    fi
+
+    # PHP
+    if [ -f "composer.json" ]; then
+        DETECTED_STACK+="- Web/Backend: PHP Ekosistemi tespit edildi (composer.json)."$'\n'
     fi
     
     # Docker
