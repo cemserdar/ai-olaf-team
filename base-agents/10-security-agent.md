@@ -40,6 +40,7 @@ Yeni bir proje güvenliği kurgulanırken:
 3. **CORS Katılığı:** Canlı ortamda (Production) asla `*` (tüm kökler) kullanılamaz; sadece izin verilmiş güvenilir domain'lere açıkça izin verilir.
 4. **Hata Mesajlarında Bilgi Sızıntısını Önleme:** API istemcisine asla detaylı stack trace veya veritabanı hata mesajı dönülmez; kullanıcıya genel bir hata kodu dönülür, teknik detaylar güvenli log sunucusuna yazılır.
 5. **Güvenli İletişim:** HTTP yerine her zaman HTTPS (TLS 1.3) zorunlu tutulur ve HSTS başlığı eklenir.
+6. **Olaf Ekibi İzolasyonu ve Repo Gizliliği:** AI Olaf Team altyapı ve hafıza dosyalarının (`.olaf/`, `AGENTS.md`, `GEMINI.md`, `.cursorrules` vb.) müşteri veya şirket repolarına sızmasını engeller; Git izolasyon kurallarının (`.gitignore`, `.git/info/exclude`, pre-commit guard) aktif olduğunu teyit edersin.
 
 ---
 

@@ -315,6 +315,14 @@ Kullanıcı `@etiket` kullandığında veya `@pm` bir alt ajana görev devretti�
 Projede kod yazıldığında, bir bug çözüldüğünde veya yeni bir model eklendiğinde:
 - Görevi tamamlayan ajan, görevi bitirmeden önce `.olaf/learned-skills/<agent>-skills.md` dosyasını günceller.
 - `@pm` ise `.olaf/memory/project-brain.md` ve `.olaf/memory/active-sprint.md` dosyalarını günceller.
+
+---
+
+## 🛡️ GİT VE COMMIT İZOLASYON PROTOKOLÜ (HAYALET EKİP KURALI)
+AI Olaf Team altyapı dosyaları (`.olaf/`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, `.clinerules`, `.agent/`, `.agents/`, `.gemini/`, `.idx/`) yalnızca yerel asistanlık ve takım orkestrasyonu içindir:
+- **ASLA COMMIT EDİLMEZ:** Hiçbir ajan veya otomasyon, AI Olaf Team altyapı ve kural dosyalarını Git reposuna stage edemez veya commit edemez.
+- **YALNIZCA PROJE KODLARI:** Yalnızca projenin gerçek kaynak kodları, konfigürasyonları, testleri ve mimari dosyaları commit edilir.
+- Projedeki `.gitignore` ve `.git/info/exclude` kuralları ile `pre-commit` kancası bu izolasyonu daima garanti altında tutar.
 EOF
 )
 
@@ -336,7 +344,9 @@ cp -f "$TARGET_DIR/GEMINI.md" "$TARGET_DIR/.clinerules"
 
 # 9. VS CODE TASKS ENTEGRASYONU
 mkdir -p "$TARGET_DIR/.vscode"
-cat << 'EOF' > "$TARGET_DIR/.vscode/tasks.json"
+TASKS_JSON_PATH="$TARGET_DIR/.vscode/tasks.json"
+if [ ! -f "$TASKS_JSON_PATH" ]; then
+cat << 'EOF' > "$TASKS_JSON_PATH"
 {
   "version": "2.0.0",
   "tasks": [
@@ -359,33 +369,132 @@ cat << 'EOF' > "$TARGET_DIR/.vscode/tasks.json"
   ]
 }
 EOF
+fi
 
-# 10. GİT POST-COMMIT HOOK ENTEGRASYONU
+# 10. GİT İZOLASYONU VE COMMIT ENGELLEME (GITIGNORE & LOCAL EXCLUDE)
+echo -e "\n${COLOR_BLUE}🛡️  Git İzolasyonu Yapılandırılıyor (Olaf Dosyaları Commit'ten Korunuyor)...${COLOR_RESET}"
+
+OLAF_IGNORE_BLOCK="
+# >>> AI OLAF TEAM - LOCAL WORKSPACE & AGENT ISOLATION (DO NOT COMMIT) >>>
+.olaf/
+.agent/
+.agents/
+.gemini/
+.idx/
+AGENTS.md
+GEMINI.md
+.cursorrules
+.clinerules
+.github/copilot-instructions.md
+.vscode/tasks.json
+# <<< AI OLAF TEAM - LOCAL WORKSPACE & AGENT ISOLATION <<<"
+
+# A) Proje Kökündeki .gitignore Dosyasına Ekle
+GITIGNORE_FILE="$TARGET_DIR/.gitignore"
+if [ -f "$GITIGNORE_FILE" ]; then
+    if ! grep -q "AI OLAF TEAM" "$GITIGNORE_FILE" && ! grep -q "^\.olaf" "$GITIGNORE_FILE"; then
+        echo "$OLAF_IGNORE_BLOCK" >> "$GITIGNORE_FILE"
+        echo -e "${COLOR_GREEN}✓ .gitignore dosyasına AI Olaf Team izolasyon kuralları eklendi.${COLOR_RESET}"
+    else
+        echo -e "${COLOR_GREEN}✓ .gitignore içinde Olaf izolasyon kuralları zaten mevcut.${COLOR_RESET}"
+    fi
+else
+    echo "$OLAF_IGNORE_BLOCK" > "$GITIGNORE_FILE"
+    echo -e "${COLOR_GREEN}✓ .gitignore dosyası oluşturuldu ve AI Olaf Team izolasyon kuralları eklendi.${COLOR_RESET}"
+fi
+
+# B) .git/info/exclude (Yerel ve Görünmez Git Yoksayma)
 if [ -d "$TARGET_DIR/.git" ]; then
-    echo -e "${COLOR_BLUE}🔗 Git Post-Commit Hook Entegre Ediliyor...${COLOR_RESET}"
+    mkdir -p "$TARGET_DIR/.git/info"
+    EXCLUDE_FILE="$TARGET_DIR/.git/info/exclude"
+    if [ -f "$EXCLUDE_FILE" ]; then
+        if ! grep -q "AI OLAF TEAM" "$EXCLUDE_FILE"; then
+            echo "$OLAF_IGNORE_BLOCK" >> "$EXCLUDE_FILE"
+            echo -e "${COLOR_GREEN}✓ .git/info/exclude içine yerel izolasyon kuralları işlendi.${COLOR_RESET}"
+        fi
+    else
+        echo "$OLAF_IGNORE_BLOCK" > "$EXCLUDE_FILE"
+        echo -e "${COLOR_GREEN}✓ .git/info/exclude oluşturuldu ve yerel kurallar eklendi.${COLOR_RESET}"
+    fi
+
+    # C) Önceden Git Staging'e veya Takibe Girmiş Olaf Dosyalarını Güvenle Çıkar (Untrack)
+    if command -v git >/dev/null 2>&1; then
+        STAGED_OLAF=$(git -C "$TARGET_DIR" ls-files .olaf AGENTS.md GEMINI.md .cursorrules .clinerules .agent .agents .gemini .idx .github/copilot-instructions.md .vscode/tasks.json 2>/dev/null || true)
+        if [ -n "$STAGED_OLAF" ]; then
+            git -C "$TARGET_DIR" rm --cached -r --quiet .olaf AGENTS.md GEMINI.md .cursorrules .clinerules .agent .agents .gemini .idx .github/copilot-instructions.md .vscode/tasks.json 2>/dev/null || true
+            echo -e "${COLOR_GREEN}✓ Daha önce git takibine girmiş Olaf dosyaları güvenle un-staged yapıldı.${COLOR_RESET}"
+        fi
+    fi
+fi
+
+# 11. GİT HOOKS ENTEGRASYONU (PRE-COMMIT GUARD VE POST-COMMIT BEYİN GÜNCELLEYİCİ)
+if [ -d "$TARGET_DIR/.git" ]; then
+    echo -e "${COLOR_BLUE}🔗 Git Hooks Entegre Ediliyor (Pre-Commit Guard & Post-Commit Sync)...${COLOR_RESET}"
     mkdir -p "$TARGET_DIR/.git/hooks"
-    HOOK_FILE="$TARGET_DIR/.git/hooks/post-commit"
-    
-    cat << 'EOF' > "$HOOK_FILE"
-#!/usr/bin/env bash
-# AI Olaf Team Git Post-Commit Güncelleyici
+
+    # 1) PRE-COMMIT HOOK: Olaf dosyalarının kazara commit edilmesini engelleyen kalkan
+    PRE_HOOK="$TARGET_DIR/.git/hooks/pre-commit"
+    PRE_GUARD=$(cat << 'EOF'
+# >>> AI OLAF TEAM PRE-COMMIT GUARD >>>
+OLAF_PATTERNS="(\.olaf/|\.agent/|\.agents/|\.gemini/|\.idx/|AGENTS\.md|GEMINI\.md|\.cursorrules|\.clinerules|\.github/copilot-instructions\.md|\.vscode/tasks\.json)"
+STAGED_OLAF=$(git diff --cached --name-only 2>/dev/null | grep -E "^$OLAF_PATTERNS" || true)
+
+if [ -n "$STAGED_OLAF" ]; then
+    echo "🛡️  [AI Olaf Team] Ekip/hafıza dosyaları commit'ten güvenle ayrıştırılıyor (un-staged)..."
+    git reset HEAD -- .olaf .agent .agents .gemini .idx AGENTS.md GEMINI.md .cursorrules .clinerules .github/copilot-instructions.md .vscode/tasks.json 2>/dev/null || true
+    echo "✓ [AI Olaf Team] Yalnızca projenin kaynak kodları commit edilecek."
+fi
+# <<< AI OLAF TEAM PRE-COMMIT GUARD <<<
+EOF
+)
+
+    if [ -f "$PRE_HOOK" ]; then
+        if ! grep -q "AI OLAF TEAM PRE-COMMIT GUARD" "$PRE_HOOK"; then
+            echo "" >> "$PRE_HOOK"
+            echo "$PRE_GUARD" >> "$PRE_HOOK"
+            echo -e "${COLOR_GREEN}✓ Mevcut pre-commit hook içine Olaf commit koruması eklendi.${COLOR_RESET}"
+        fi
+    else
+        echo "#!/usr/bin/env bash" > "$PRE_HOOK"
+        echo "$PRE_GUARD" >> "$PRE_HOOK"
+        echo -e "${COLOR_GREEN}✓ pre-commit koruma kancası oluşturuldu.${COLOR_RESET}"
+    fi
+    chmod +x "$PRE_HOOK" 2>/dev/null || true
+
+    # 2) POST-COMMIT HOOK: Brain dosyasındaki son commit bilgisini güncelleyici
+    POST_HOOK="$TARGET_DIR/.git/hooks/post-commit"
+    POST_SYNC=$(cat << 'EOF'
+# >>> AI OLAF TEAM POST-COMMIT SYNC >>>
 if [ -f ".olaf/memory/project-brain.md" ]; then
     LAST_HASH=$(git log -1 --format="%h" 2>/dev/null)
     LAST_MSG=$(git log -1 --format="%s" 2>/dev/null)
     LAST_DATE=$(git log -1 --format="%cd" --date=format:'%Y-%m-%d %H:%M:%S' 2>/dev/null)
     
-    # Geçici dosyaya yazıp project-brain içine güncelle (macOS ve Linux uyumlu)
     sed -e "s/Son Commit ID:.*/Son Commit ID: $LAST_HASH/g" \
         -e "s/Son Commit Mesajı:.*/Son Commit Mesajı: $LAST_MSG/g" \
         -e "s/Son Değişiklik Tarihi:.*/Son Değişiklik Tarihi: $LAST_DATE/g" \
         .olaf/memory/project-brain.md > .olaf/memory/project-brain.tmp 2>/dev/null && \
         mv .olaf/memory/project-brain.tmp .olaf/memory/project-brain.md 2>/dev/null || true
 fi
+# <<< AI OLAF TEAM POST-COMMIT SYNC <<<
 EOF
-    chmod +x "$HOOK_FILE"
+)
+
+    if [ -f "$POST_HOOK" ]; then
+        if ! grep -q "AI OLAF TEAM POST-COMMIT SYNC" "$POST_HOOK"; then
+            echo "" >> "$POST_HOOK"
+            echo "$POST_SYNC" >> "$POST_HOOK"
+            echo -e "${COLOR_GREEN}✓ Mevcut post-commit hook güncellendi.${COLOR_RESET}"
+        fi
+    else
+        echo "#!/usr/bin/env bash" > "$POST_HOOK"
+        echo "$POST_SYNC" >> "$POST_HOOK"
+        echo -e "${COLOR_GREEN}✓ post-commit kancası oluşturuldu.${COLOR_RESET}"
+    fi
+    chmod +x "$POST_HOOK" 2>/dev/null || true
 fi
 
-# 11. BAŞARI RAPORU VE KULLANICI BİLGİLENDİRMESİ
+# 12. BAŞARI RAPORU VE KULLANICI BİLGİLENDİRMESİ
 echo -e "\n${COLOR_GREEN}${COLOR_BOLD}=========================================================================="
 echo "    🎉 AI OLAF TEAM BAŞARIYLA ENTEGRE EDİLDİ!                            "
 echo -e "==========================================================================${COLOR_RESET}"
@@ -393,6 +502,7 @@ echo -e "📁 Proje Adı       : ${COLOR_CYAN}$PROJECT_NAME${COLOR_RESET}"
 echo -e "🏷️  Proje Türü      : ${COLOR_YELLOW}$PROJECT_TYPE${COLOR_RESET}"
 echo -e "👥 Hazır Ajanlar   : ${COLOR_GREEN}15 Uzman Ajan (.olaf/base-agents & learned-skills)${COLOR_RESET}"
 echo -e "🌉 Kurulan Köprüler: ${COLOR_CYAN}Antigravity (.agent/workflows), VS Code, Cursor, Copilot${COLOR_RESET}"
+echo -e "🛡️  Git İzolasyonu  : ${COLOR_GREEN}Tam Korumalı (Olaf dosyaları commit edilmez, repo temiz kalır)${COLOR_RESET}"
 
 if [ "$IS_BROWNFIELD" = true ]; then
     echo -e "\n${COLOR_YELLOW}${COLOR_BOLD}👉 SIRADAKİ ADIM (ÖNEMLİ):${COLOR_RESET}"

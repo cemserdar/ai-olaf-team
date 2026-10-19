@@ -438,6 +438,14 @@ Kullanıcı `@etiket` kullandığında veya `@pm` bir alt ajana görev devretti�
 Projede kod yazıldığında, bir bug çözüldüğünde veya yeni bir model eklendiğinde:
 - Görevi tamamlayan ajan, görevi bitirmeden önce `.olaf/learned-skills/<agent>-skills.md` dosyasını günceller.
 - `@pm` ise `.olaf/memory/project-brain.md` ve `.olaf/memory/active-sprint.md` dosyalarını günceller.
+
+---
+
+## 🛡️ GİT VE COMMIT İZOLASYON PROTOKOLÜ (HAYALET EKİP KURALI)
+AI Olaf Team altyapı dosyaları (`.olaf/`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, `.clinerules`, `.agent/`, `.agents/`, `.gemini/`, `.idx/`) yalnızca yerel asistanlık ve takım orkestrasyonu içindir:
+- **ASLA COMMIT EDİLMEZ:** Hiçbir ajan veya otomasyon, AI Olaf Team altyapı ve kural dosyalarını Git reposuna stage edemez veya commit edemez.
+- **YALNIZCA PROJE KODLARI:** Yalnızca projenin gerçek kaynak kodları, konfigürasyonları, testleri ve mimari dosyaları commit edilir.
+- Projedeki `.gitignore` ve `.git/info/exclude` kuralları ile `pre-commit` kancası bu izolasyonu daima garanti altında tutar.
 "@
 
 [System.IO.File]::WriteAllText((Join-Path $targetDir "GEMINI.md"), $masterRules, $utf8NoBom)
@@ -484,42 +492,159 @@ $tasksJson = @"
   ]
 }
 "@
-[System.IO.File]::WriteAllText((Join-Path $vscodeDir "tasks.json"), $tasksJson, $utf8NoBom)
+$tasksJsonPath = Join-Path $vscodeDir "tasks.json"
+if (-not (Test-Path -LiteralPath $tasksJsonPath)) {
+    [System.IO.File]::WriteAllText($tasksJsonPath, $tasksJson, $utf8NoBom)
+}
 
-# 10. GİT POST-COMMIT HOOK ENTEGRASYONU
+# 10. GİT İZOLASYONU VE COMMIT ENGELLEME (GITIGNORE & LOCAL EXCLUDE)
+Write-Host "`n$cBlue🛡️  Git İzolasyonu Yapılandırılıyor (Olaf Dosyaları Commit'ten Korunuyor)...$cReset"
+
+$olafIgnoreBlock = @"
+
+# >>> AI OLAF TEAM - LOCAL WORKSPACE & AGENT ISOLATION (DO NOT COMMIT) >>>
+.olaf/
+.agent/
+.agents/
+.gemini/
+.idx/
+AGENTS.md
+GEMINI.md
+.cursorrules
+.clinerules
+.github/copilot-instructions.md
+.vscode/tasks.json
+# <<< AI OLAF TEAM - LOCAL WORKSPACE & AGENT ISOLATION <<<
+"@
+
+# A) Proje Kökündeki .gitignore Dosyasına Ekle
+$gitignoreFile = Join-Path $targetDir ".gitignore"
+try {
+    if (Test-Path -LiteralPath $gitignoreFile) {
+        $giContent = [System.IO.File]::ReadAllText($gitignoreFile, [System.Text.Encoding]::UTF8)
+        if ($giContent -notmatch "AI OLAF TEAM" -and $giContent -notmatch "^\.olaf/?`$") {
+            Add-Content -LiteralPath $gitignoreFile -Value $olafIgnoreBlock -Encoding UTF8
+            Write-Host "$cGreen✓ .gitignore dosyasına AI Olaf Team izolasyon kuralları eklendi.$cReset"
+        } else {
+            Write-Host "$cGreen✓ .gitignore içinde Olaf izolasyon kuralları zaten mevcut.$cReset"
+        }
+    } else {
+        [System.IO.File]::WriteAllText($gitignoreFile, $olafIgnoreBlock.TrimStart(), $utf8NoBom)
+        Write-Host "$cGreen✓ .gitignore dosyası oluşturuldu ve AI Olaf Team izolasyon kuralları eklendi.$cReset"
+    }
+} catch {
+    Write-Host "$cYellow! .gitignore güncellenirken uyarı: $($_.Exception.Message)$cReset"
+}
+
+# B) .git/info/exclude (Yerel ve Görünmez Git Yoksayma)
 $gitDir = Join-Path $targetDir ".git"
 if (Test-Path -LiteralPath $gitDir) {
     try {
-        Write-Host "$cBlue🔗 Git Post-Commit Hook Entegre Ediliyor...$cReset"
+        $gitInfoDir = Join-Path $gitDir "info"
+        if (-not (Test-Path -LiteralPath $gitInfoDir)) {
+            New-Item -ItemType Directory -Force -Path $gitInfoDir | Out-Null
+        }
+        $excludeFile = Join-Path $gitInfoDir "exclude"
+        $exContent = if (Test-Path -LiteralPath $excludeFile) {
+            [System.IO.File]::ReadAllText($excludeFile, [System.Text.Encoding]::UTF8)
+        } else {
+            ""
+        }
+        if ($exContent -notmatch "AI OLAF TEAM") {
+            Add-Content -LiteralPath $excludeFile -Value $olafIgnoreBlock -Encoding UTF8
+            Write-Host "$cGreen✓ .git/info/exclude içine yerel izolasyon kuralları işlendi.$cReset"
+        }
+    } catch {}
+
+    # C) Önceden Git Staging'e veya Takibe Girmiş Olaf Dosyalarını Güvenle Çıkar (Untrack)
+    try {
+        if (Get-Command git -ErrorAction SilentlyContinue) {
+            $stagedOlaf = git -C "$targetDir" ls-files .olaf AGENTS.md GEMINI.md .cursorrules .clinerules .agent .agents .gemini .idx .github/copilot-instructions.md .vscode/tasks.json 2>$null
+            if ($stagedOlaf) {
+                git -C "$targetDir" rm --cached -r --quiet .olaf AGENTS.md GEMINI.md .cursorrules .clinerules .agent .agents .gemini .idx .github/copilot-instructions.md .vscode/tasks.json 2>$null
+                Write-Host "$cGreen✓ Daha önce git takibine girmiş Olaf dosyaları güvenle un-staged yapıldı.$cReset"
+            }
+        }
+    } catch {}
+}
+
+# 11. GİT HOOKS ENTEGRASYONU (PRE-COMMIT GUARD VE POST-COMMIT BEYİN GÜNCELLEYİCİ)
+if (Test-Path -LiteralPath $gitDir) {
+    try {
+        Write-Host "$cBlue🔗 Git Hooks Entegre Ediliyor (Pre-Commit Guard & Post-Commit Sync)...$cReset"
         $hooksDir = Join-Path $gitDir "hooks"
         if (-not (Test-Path -LiteralPath $hooksDir)) {
             New-Item -ItemType Directory -Force -Path $hooksDir | Out-Null
         }
-        
-        $hookContent = @"
-#!/usr/bin/env bash
-# AI Olaf Team Git Post-Commit Guncelleyici
+
+        # 1) PRE-COMMIT HOOK: Olaf dosyalarının kazara commit edilmesini engelleyen kalkan
+        $preCommitFile = Join-Path $hooksDir "pre-commit"
+        $preCommitGuard = @'
+# >>> AI OLAF TEAM PRE-COMMIT GUARD >>>
+OLAF_PATTERNS="(\.olaf/|\.agent/|\.agents/|\.gemini/|\.idx/|AGENTS\.md|GEMINI\.md|\.cursorrules|\.clinerules|\.github/copilot-instructions\.md|\.vscode/tasks\.json)"
+STAGED_OLAF=$(git diff --cached --name-only 2>/dev/null | grep -E "^$OLAF_PATTERNS" || true)
+
+if [ -n "$STAGED_OLAF" ]; then
+    echo "🛡️  [AI Olaf Team] Ekip/hafıza dosyaları commit'ten güvenle ayrıştırılıyor (un-staged)..."
+    git reset HEAD -- .olaf .agent .agents .gemini .idx AGENTS.md GEMINI.md .cursorrules .clinerules .github/copilot-instructions.md .vscode/tasks.json 2>/dev/null || true
+    echo "✓ [AI Olaf Team] Yalnızca projenin kaynak kodları commit edilecek."
+fi
+# <<< AI OLAF TEAM PRE-COMMIT GUARD <<<
+'@
+
+        if (Test-Path -LiteralPath $preCommitFile) {
+            $existingPre = [System.IO.File]::ReadAllText($preCommitFile, [System.Text.Encoding]::UTF8)
+            if ($existingPre -notmatch "AI OLAF TEAM PRE-COMMIT GUARD") {
+                $newPre = "$existingPre`n`n$preCommitGuard"
+                $newPreLf = $newPre.Replace("`r`n", "`n")
+                [System.IO.File]::WriteAllText($preCommitFile, $newPreLf, $utf8NoBom)
+                Write-Host "$cGreen✓ Mevcut pre-commit hook içine Olaf commit koruması eklendi.$cReset"
+            }
+        } else {
+            $newPre = "#!/usr/bin/env bash`n$preCommitGuard`n"
+            $newPreLf = $newPre.Replace("`r`n", "`n")
+            [System.IO.File]::WriteAllText($preCommitFile, $newPreLf, $utf8NoBom)
+            Write-Host "$cGreen✓ pre-commit koruma kancası oluşturuldu.$cReset"
+        }
+
+        # 2) POST-COMMIT HOOK: Brain dosyasındaki son commit bilgisini güncelleyici
+        $postCommitFile = Join-Path $hooksDir "post-commit"
+        $postCommitSync = @'
+# >>> AI OLAF TEAM POST-COMMIT SYNC >>>
 if [ -f ".olaf/memory/project-brain.md" ]; then
-    LAST_HASH=`$(git log -1 --format="%h" 2>/dev/null)
-    LAST_MSG=`$(git log -1 --format="%s" 2>/dev/null)
-    LAST_DATE=`$(git log -1 --format="%cd" --date=format:'%Y-%m-%d %H:%M:%S' 2>/dev/null)
+    LAST_HASH=$(git log -1 --format="%h" 2>/dev/null)
+    LAST_MSG=$(git log -1 --format="%s" 2>/dev/null)
+    LAST_DATE=$(git log -1 --format="%cd" --date=format:'%Y-%m-%d %H:%M:%S' 2>/dev/null)
     
-    sed -e "s/Son Commit ID:.*/Son Commit ID: `$LAST_HASH/g" \
-        -e "s/Son Commit Mesajı:.*/Son Commit Mesajı: `$LAST_MSG/g" \
-        -e "s/Son Değişiklik Tarihi:.*/Son Değişiklik Tarihi: `$LAST_DATE/g" \
+    sed -e "s/Son Commit ID:.*/Son Commit ID: $LAST_HASH/g" \
+        -e "s/Son Commit Mesajı:.*/Son Commit Mesajı: $LAST_MSG/g" \
+        -e "s/Son Değişiklik Tarihi:.*/Son Değişiklik Tarihi: $LAST_DATE/g" \
         .olaf/memory/project-brain.md > .olaf/memory/project-brain.tmp 2>/dev/null && \
         mv .olaf/memory/project-brain.tmp .olaf/memory/project-brain.md 2>/dev/null || true
 fi
-"@
-        # Windows Git Bash uyumluluğu için UTF-8 NO BOM ve LF satır sonları ZORUNLUDUR
-        $hookContentLf = $hookContent.Replace("`r`n", "`n")
-        [System.IO.File]::WriteAllText((Join-Path $hooksDir "post-commit"), $hookContentLf, $utf8NoBom)
+# <<< AI OLAF TEAM POST-COMMIT SYNC <<<
+'@
+
+        if (Test-Path -LiteralPath $postCommitFile) {
+            $existingPost = [System.IO.File]::ReadAllText($postCommitFile, [System.Text.Encoding]::UTF8)
+            if ($existingPost -notmatch "AI OLAF TEAM POST-COMMIT SYNC") {
+                $newPost = "$existingPost`n`n$postCommitSync"
+                $newPostLf = $newPost.Replace("`r`n", "`n")
+                [System.IO.File]::WriteAllText($postCommitFile, $newPostLf, $utf8NoBom)
+                Write-Host "$cGreen✓ Mevcut post-commit hook güncellendi.$cReset"
+            }
+        } else {
+            $newPost = "#!/usr/bin/env bash`n$postCommitSync`n"
+            $newPostLf = $newPost.Replace("`r`n", "`n")
+            [System.IO.File]::WriteAllText($postCommitFile, $newPostLf, $utf8NoBom)
+            Write-Host "$cGreen✓ post-commit kancası oluşturuldu.$cReset"
+        }
     } catch {
         # Hook yazılamazsa süreci durdurma
     }
 }
 
-# 11. BAŞARI RAPORU VE KULLANICI BİLGİLENDİRMESİ
+# 12. BAŞARI RAPORU VE KULLANICI BİLGİLENDİRMESİ
 Write-Host "`n$cBold$cGreen=========================================================================="
 Write-Host "    🎉 AI OLAF TEAM BAŞARIYLA ENTEGRE EDİLDİ!                            "
 Write-Host "==========================================================================$cReset"
@@ -527,6 +652,7 @@ Write-Host "📁 Proje Adı       : $cCyan$projectName$cReset"
 Write-Host "🏷️  Proje Türü      : $cYellow$projectType$cReset"
 Write-Host "👥 Hazır Ajanlar   : $cGreen 15 Uzman Ajan (.olaf/base-agents & learned-skills)$cReset"
 Write-Host "🌉 Kurulan Köprüler: $cCyan Antigravity (.agent/workflows), VS Code, Cursor, Copilot$cReset"
+Write-Host "🛡️  Git İzolasyonu  : $cGreen Tam Korumalı (Olaf dosyaları commit edilmez, repo temiz kalır)$cReset"
 
 if ($isBrownfield) {
     Write-Host "`n$cBold$cYellow👉 SIRADAKİ ADIM (ÖNEMLİ):$cReset"

@@ -41,6 +41,7 @@ Yeni bir DevOps altyapısı kurarken:
 3. **`.dockerignore` Disiplini:** `node_modules/`, `bin/`, `obj/`, `.git/`, `.env` dosyalarının imaja kopyalanması kesinlikle engellenir.
 4. **Altyapı Kod Olarak (IaC):** Sunucu kurulumları ve konfigürasyonlar elle değil; shell betikleri, docker-compose veya Ansible ile otomatikleştirilir.
 5. **Sağlık Kontrolleri (Healthchecks):** Docker Compose içindeki veritabanı ve API servislerine `healthcheck` eklenir, bağımlı servisler `condition: service_healthy` ile başlatılır.
+6. **Git ve Commit İzolasyonu (Ghost Modu):** Projelerde `.git/info/exclude` ve `.gitignore` dosyalarında AI Olaf Team dizinlerinin (`.olaf/`, `AGENTS.md`, `GEMINI.md`, `.agent/`, `.agents/`, `.gemini/`, `.idx/`) yer aldığından ve pre-commit guard kancasıyla sadece asıl kaynak kodların commit edildiğinden emin olursun.
 
 ---
 

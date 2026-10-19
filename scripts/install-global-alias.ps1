@@ -1,4 +1,4 @@
-﻿<#
+<#
 ==============================================================================
 AI OLAF TEAM - WINDOWS GLOBAL KOMUT VE ALIAS KURULUM BETİĞİ (POWERSHELL)
 ==============================================================================
@@ -200,8 +200,62 @@ try {
     Write-Host "$cYellow$symWarn Not: Profil dosyası otomatik güncellenemedi, ancak PATH (.cmd) üzerinden çalıştırma hazır.$cReset"
 }
 
+# 7. GİT GLOBAL YOKSAYMA (GLOBAL GITIGNORE) KORUMASI
+Write-Host "`n$cBlue$symInfo Git Global İzolasyonu (Tüm Projelerde Commit Koruması) Yapılandırılıyor...$cReset"
+if (Get-Command git -ErrorAction SilentlyContinue) {
+    try {
+        $globalExcludes = git config --global --get core.excludesfile 2>$null
+        if (-not $globalExcludes) {
+            $globalExcludes = Join-Path $HOME ".gitignore_global"
+            git config --global core.excludesfile "$globalExcludes"
+        }
+        
+        if ($globalExcludes.StartsWith("~")) {
+            $globalExcludes = Join-Path $HOME ($globalExcludes.Substring(1).TrimStart('\', '/'))
+        }
+
+        $globalIgnoreDir = Split-Path -Parent $globalExcludes
+        if ($globalIgnoreDir -and -not (Test-Path -LiteralPath $globalIgnoreDir)) {
+            New-Item -ItemType Directory -Force -Path $globalIgnoreDir | Out-Null
+        }
+
+        $globalExContent = if (Test-Path -LiteralPath $globalExcludes) {
+            [System.IO.File]::ReadAllText($globalExcludes, [System.Text.Encoding]::UTF8)
+        } else {
+            ""
+        }
+
+        if ($globalExContent -notmatch "AI OLAF TEAM") {
+            $olafGlobalBlock = @"
+
+# >>> AI OLAF TEAM - GLOBAL GIT IGNORE (DO NOT COMMIT) >>>
+.olaf/
+.agent/
+.agents/
+.gemini/
+.idx/
+AGENTS.md
+GEMINI.md
+.cursorrules
+.clinerules
+.github/copilot-instructions.md
+# <<< AI OLAF TEAM - GLOBAL GIT IGNORE <<<
+"@
+            Add-Content -LiteralPath $globalExcludes -Value $olafGlobalBlock -Encoding UTF8
+            Write-Host "$cGreen$symCheck Git Global Ignore Yapılandırıldı:$cReset $globalExcludes (Tüm projelerde Olaf dosyaları otomatik hariç tutulur)"
+        } else {
+            Write-Host "$cGreen$symCheck Git Global Ignore zaten koruma altında:$cReset $globalExcludes"
+        }
+    } catch {
+        Write-Host "$cYellow$symWarn Git global ignore yapılandırılamadı, ancak proje bazlı izolasyon devrede olacak.$cReset"
+    }
+} else {
+    Write-Host "$cYellow$symWarn Git komutu bulunamadı, proje bazlı izolasyon kullanılacak.$cReset"
+}
+
 Write-Host "`n$cBold$cGreen$symTrophy TEBRİKLER! Windows Kurulumu Başarıyla Tamamlandı.$cReset"
 Write-Host "`nDeğişikliklerin geçerli olması için PowerShell, CMD veya VS Code terminalinizi kapatıp yeniden açın."
 Write-Host "Artık dilediğiniz herhangi bir proje klasörüne gidip sadece:"
 Write-Host "   $cBold$cGreen olaf-init $cReset"
-Write-Host "yazarak 15 kişilik otonom ekibi projenize anında dahil edebilirsiniz!`n"
+Write-Host "yazarak 15 kişilik otonom ekibi projenize anında dahil edebilirsiniz!"
+Write-Host "$cGreen🛡️  Tüm projelerinizde Olaf ekip dosyaları otomatik olarak Git commit'lerinden korunur.$cReset`n"

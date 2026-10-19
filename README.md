@@ -17,7 +17,7 @@
 5. [🌱 Senaryo 2: Sıfırdan Yeni Proje Başlatma (Greenfield)](#-5-senaryo-2-s%C4%B1f%C4%B1rdan-yeni-proje-ba%C5%9Flatma-greenfield)
 6. [🛠️ Günlük İş Akışları ve /Slash Komutları](#-6-g%C3%BCnl%C3%BCk-%C4%B0%C5%9F-ak%C4%B1%C5%9Flar%C4%B1-ve-slash-komutlar%C4%B1)
 7. [🏷️ Doğrudan Ajan Çağırma Örnekleri (@etiket)](#-7-do%C4%9Frudan-ajan-%C3%87a%C4%9F%C4%B1rma-%C3%96rnekleri-etiket)
-8. [🔄 Proje Hafızasını Bilgisayarlar Arasında Taşıma](#-8-proje-haf%C4%B1zas%C4%B1n%C4%B1-bilgisayarlar-aras%C4%B1nda-ta%C5%9F%C4%B1ma)
+8. [🛡️ Git ve Commit İzolasyonu: Sıfır Kirlilik (Ghost Modu)](#-8-git-ve-commit-izolasyonu-s%C4%B1f%C4%B1r-kirlilik-ghost-modu)
 9. [📁 Merkezi Repo Dizin Mimarisi](#-9-merkezi-repo-dizin-mimarisi)
 
 ---
@@ -248,22 +248,25 @@ Antigravity IDE ve VS Code içinde doğrudan kullanabileceğiniz hazır slash ko
 
 ---
 
-## 🔄 8. PROJE HAFIZASINI BİLGİSAYARLAR ARASINDA TAŞIMA
+## 🛡️ 8. GİT VE COMMIT İZOLASYONU: SIFIR KİRLİLİK (GHOST MODU)
 
-Bir projede çalışırken masaüstünden laptopa geçtiğinizde projenin öğrendiği kuralların kaybolmaması için `.olaf/` klasörü **Git reposuna dahil edilmelidir**:
+AI Olaf Team, projelerinize yardımcı olmak için bağlanan **"Hayalet Bir Mühendislik Ekibi"** gibi çalışır.
 
-```bash
-# Projede yapılan geliştirmeleri ve öğrenilen hafızayı commit edin
-git add .olaf/ GEMINI.md AGENTS.md
-git commit -m "chore: AI Olaf Team hafızası ve son sprint kuralları güncellendi"
-git push
-```
+> **⚠️ ALTIN KURAL:** AI Olaf Team altyapı ve hafıza dosyaları (`.olaf/`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, `.clinerules`, `.agent/`, `.agents/`) **çalıştığınız projenin Git geçmişine ASLA dahil edilmez ve commit edilmez!**  
+> Repoya yalnızca projenizin gerçek kaynak kodları, testleri ve dokümantasyonları commit edilir.
 
-Diğer bilgisayarınıza geçtiğinizde:
-```bash
-git pull
-```
-yaptığınız anda, 15 kişilik ekibiniz diğer bilgisayarda öğrendiği her şeyi aynen hatırlar!
+### 🔒 3 Kademeli Otomatik Koruma Kalkanı:
+1. **Kademe 1 - Git Global Ignore (`~/.gitignore_global`):**
+   `install-windows.bat` veya `install-global-alias.sh` çalıştırıldığında sistem genelindeki `core.excludesfile` otomatik yapılandırılır. Bilgisayarınızdaki mevcut veya yeni klonlanan tüm Git repolarında Olaf dosyaları otomatik olarak Git için görünmez hale gelir.
+2. **Kademe 2 - Yerel Gizleme (`.git/info/exclude` & `.gitignore`):**
+   Bir projede `olaf-init` çalıştırıldığında, projenin `.git/info/exclude` ve kök `.gitignore` dosyalarına izolasyon kuralları eklenir. `git status` çıktısında Olaf dosyaları untracked olarak bile listelenmez.
+3. **Kademe 3 - Pre-Commit Guard (Son Savunma Hattı):**
+   Geliştirici veya bir IDE eklentisi kazara `git add .` veya zorla stage işlemi yapsa dahi, `.git/hooks/pre-commit` kancası commit anında devreye girer. Olaf dosyalarını otomatik olarak `un-stage` yapar ve sadece projenin kaynak kodlarının commit edilmesini sağlar.
+
+### 🔄 Bilgisayarlar Arası Senkronizasyon:
+- Ekibin temel beyni, 15 ajanın mesleki DNA'sı ve iş akışları `~/ai-olaf-team/` merkezi repo dizininizde yaşar.
+- Masaüstünüzde veya laptopunuzda `~/ai-olaf-team/` dizinindeyken `git push` ve `git pull` yaparak ekibinizi her zaman güncel tutabilirsiniz.
+- Yeni bir bilgisayarda projenizi klonladığınızda, sadece proje klasöründe `olaf-init` yazmanız ekibin projeye anında adapte olması için yeterlidir.
 
 ---
 

@@ -17,16 +17,18 @@ tmp/
 temp/
 scratch/
 
-# Yerel Testler Sonucu Oluşabilecek Klasörler
+# Yerel Testler ve AI Olaf Team İzolasyonu (Commit Edilmez)
 node_modules/
 .olaf/
 .agent/
+.agents/
 .idx/
 .gemini/
 .cursorrules
 .clinerules
 AGENTS.md
 GEMINI.md
+.github/copilot-instructions.md
 
 # IDE Konfigürasyonları
 .idea/

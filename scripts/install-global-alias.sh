@@ -87,6 +87,39 @@ if [ "$(uname -s)" = "Darwin" ] && [ -f "$HOME/.zprofile" ]; then
     fi
 fi
 
+# 3. GİT GLOBAL YOKSAYMA (GLOBAL GITIGNORE) KORUMASI
+if command -v git >/dev/null 2>&1; then
+    GLOBAL_EXCLUDES=$(git config --global --get core.excludesfile 2>/dev/null || true)
+    if [ -z "$GLOBAL_EXCLUDES" ]; then
+        GLOBAL_EXCLUDES="$HOME/.gitignore_global"
+        git config --global core.excludesfile "$GLOBAL_EXCLUDES"
+    fi
+    GLOBAL_EXCLUDES="${GLOBAL_EXCLUDES/#\~/$HOME}"
+    mkdir -p "$(dirname "$GLOBAL_EXCLUDES")"
+    touch "$GLOBAL_EXCLUDES"
+
+    if ! grep -q "AI OLAF TEAM - GLOBAL GIT IGNORE" "$GLOBAL_EXCLUDES"; then
+        cat << 'EOF' >> "$GLOBAL_EXCLUDES"
+
+# >>> AI OLAF TEAM - GLOBAL GIT IGNORE (DO NOT COMMIT) >>>
+.olaf/
+.agent/
+.agents/
+.gemini/
+.idx/
+AGENTS.md
+GEMINI.md
+.cursorrules
+.clinerules
+.github/copilot-instructions.md
+# <<< AI OLAF TEAM - GLOBAL GIT IGNORE <<<
+EOF
+        echo -e "${COLOR_GREEN}✓ Git Global Ignore Yapılandırıldı:${COLOR_RESET} $GLOBAL_EXCLUDES (Tüm projelerde Olaf dosyaları otomatik hariç tutulur)"
+    else
+        echo -e "${COLOR_GREEN}✓ Git Global Ignore zaten koruma altında:${COLOR_RESET} $GLOBAL_EXCLUDES"
+    fi
+fi
+
 echo -e "\n${COLOR_GREEN}${COLOR_BOLD}🎉 TEBRİKLER! Kurulum başarıyla tamamlandı.${COLOR_RESET}"
 echo -e "\nDeğişikliklerin mevcut terminalinizde hemen geçerli olması için lütfen şu komutu çalıştırın:"
 if [ -n "$ZSH_VERSION" ] || [ "$SHELL" = "*/zsh" ]; then
@@ -96,4 +129,5 @@ else
 fi
 echo -e "\nArtık dilediğiniz herhangi bir proje klasörüne gidip sadece:"
 echo -e "   ${COLOR_GREEN}${COLOR_BOLD}olaf-init${COLOR_RESET}"
-echo -e "yazarak 15 kişilik otonom ekibi projenize anında dahil edebilirsiniz!\n"
+echo -e "yazarak 15 kişilik otonom ekibi projenize anında dahil edebilirsiniz!"
+echo -e "${COLOR_GREEN}🛡️  Tüm projelerinizde Olaf ekip dosyaları otomatik olarak Git commit'lerinden korunur.${COLOR_RESET}\n"
