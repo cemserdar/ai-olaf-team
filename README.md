@@ -104,15 +104,26 @@ bash ~/ai-olaf-team/scripts/install-global-alias.sh
 source ~/.bashrc   # veya zsh kullanıyorsanız: source ~/.zshrc
 ```
 
-#### 🪟 Windows (PowerShell / Windows Terminal):
-PowerShell yönetici olmadan da çalışır; `$PROFILE` ve Kullanıcı PATH ortam değişkenine `olaf-init` komutunu ekler:
-```powershell
-powershell -ExecutionPolicy Bypass -File "$HOME\ai-olaf-team\scripts\install-global-alias.ps1"
+#### 🪟 Windows (PowerShell, CMD veya Git Bash):
+Windows kullanıcıları için **tek tıkla kurulum** veya terminal komutları hazırlanmıştır:
 
-# Terminali kapatıp açın veya profilinizi yenileyin:
-. $PROFILE
+**1. Yöntem (En Kolay - Tek Tık):**
+Repo klasöründeki `install-windows.bat` dosyasına çift tıklayın! Betik çalıştırma izinlerini (ExecutionPolicy) otomatik yapılandırır, PATH ve çalıştırıcıları hazırlar.
+
+**2. Yöntem (PowerShell):**
+```powershell
+cd ai-olaf-team
+powershell -ExecutionPolicy Bypass -File scripts\install-global-alias.ps1
 ```
-*(CMD kullanıcıları için `olaf-init.cmd` başlatıcısı otomatik olarak PATH dizinine yerleştirilir.)*
+
+**3. Yöntem (CMD):**
+```cmd
+cd ai-olaf-team
+install-windows.bat
+```
+
+> **💡 Not:** Kurulum tamamlandıktan sonra terminalinizi (PowerShell, CMD, Git Bash veya VS Code) bir kez kapatıp yeniden açın. Artık herhangi bir proje klasöründe doğrudan `olaf-init` yazabilirsiniz!
+*(CMD ve Batch için `olaf-init.cmd` / `.bat`, Git Bash için `olaf-init` kabuk betiği otomatik olarak PATH'e eklenmiştir.)*
 
 ### 3. Adım: İkinci Bilgisayarınızda (Örn: Laptop) Repoyu Klonlayın
 ```bash
@@ -121,10 +132,10 @@ cd ~
 git clone git@github.com:KULLANICI_ADINIZ/ai-olaf-team.git
 cd ~/ai-olaf-team && bash scripts/install-global-alias.sh
 
-# Windows (PowerShell):
+# Windows (PowerShell / CMD):
 cd $HOME
 git clone git@github.com:KULLANICI_ADINIZ/ai-olaf-team.git
-cd $HOME\ai-olaf-team; powershell -ExecutionPolicy Bypass -File scripts\install-global-alias.ps1
+cd ai-olaf-team && .\install-windows.bat
 ```
 
 > **🔄 Senkronizasyon İpucu:** Masaüstünde bir ajanın genel DNA'sını (`base-agents/`) güncellediğinizde `git push` yapın, laptopunuza geçtiğinizde `git pull` yaparak ekibinizi her an güncel tutun!
@@ -285,12 +296,14 @@ yaptığınız anda, 15 kişilik ekibiniz diğer bilgisayarda öğrendiği her �
 │   ├── learned-skill-template.md   # Her ajanın projeye özel dolduracağı skill şablonu
 │   ├── project-brain-template.md   # Projenin mimari beyni ve teknoloji haritası şablonu
 │   └── active-sprint-template.md   # Aktif görev ve ajan takip tahtası şablonu
+├── install-windows.bat             # Windows: Tek tıkla otomatik kurulum sihirbazı başlatıcısı
 ├── scripts/
 │   ├── olaf-init.sh                # Linux & macOS: Projeye takımı bağlayan entegrasyon betiği (Bash)
 │   ├── install-global-alias.sh     # Linux & macOS: Sisteme 'olaf-init' global komutunu ekleyen sihirbaz
 │   ├── olaf-init.ps1               # Windows: PowerShell ile projeye takımı bağlayan entegrasyon motoru
-│   ├── olaf-init.cmd               # Windows: CMD / Terminal tek tık başlatıcısı
-│   └── install-global-alias.ps1    # Windows: PowerShell Profiline ve PATH'e 'olaf-init' ekleyen sihirbaz
+│   ├── olaf-init.cmd               # Windows: CMD / Terminal başlatıcısı (Bypass korumalı)
+│   ├── install-global-alias.ps1    # Windows: PowerShell Profiline ve PATH'e 'olaf-init' ekleyen sihirbaz
+│   └── install-windows.bat         # Windows: scripts içi yedek tek tık başlatıcı
 ├── .gitignore                      # Git yoksayma kuralları
 └── README.md                       # Çok detaylı Türkçe Kullanım ve Senkronizasyon Kılavuzu
 ```

@@ -13,16 +13,36 @@ param()
 
 $ErrorActionPreference = "Stop"
 
-# ANSI Renk Kodları
-$esc = [char]27
-$cReset = "$esc[0m"
-$cBold = "$esc[1m"
-$cCyan = "$esc[36m"
-$cGreen = "$esc[32m"
-$cYellow = "$esc[33m"
-$cBlue = "$esc[34m"
-$cMagenta = "$esc[35m"
-$cRed = "$esc[31m"
+# ANSI Renk Kodları veya Düz Metin Uyumluluğu (Windows PowerShell 5.1 & Terminal)
+$supportsAnsi = $false
+try {
+    if ($Host.UI.SupportsVirtualTerminal -or $env:WT_SESSION -or $env:TERM_PROGRAM) {
+        $supportsAnsi = $true
+    }
+} catch {
+    $supportsAnsi = $false
+}
+
+if ($supportsAnsi) {
+    $esc = [char]27
+    $cReset = "$esc[0m"
+    $cBold = "$esc[1m"
+    $cCyan = "$esc[36m"
+    $cGreen = "$esc[32m"
+    $cYellow = "$esc[33m"
+    $cBlue = "$esc[34m"
+    $cRed = "$esc[31m"
+} else {
+    $cReset = ""
+    $cBold = ""
+    $cCyan = ""
+    $cGreen = ""
+    $cYellow = ""
+    $cBlue = ""
+    $cRed = ""
+}
+
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
 Write-Host "$cBold$cCyan==========================================================================$cReset"
 Write-Host "$cBold$cCyan    🚀 AI OLAF TEAM - OTONOM YAZILIM TAKIMI ENTEGRASYON MOTORU (WINDOWS)$cReset"
@@ -31,19 +51,33 @@ Write-Host "$cBold$cCyan========================================================
 # 1. AI OLAF TEAM MERKEZİ REPO DİZİNİNİ TESPİT ET
 $olafCentralDir = $null
 
-if ($env:AI_OLAF_TEAM_DIR -and (Test-Path (Join-Path $env:AI_OLAF_TEAM_DIR "base-agents"))) {
-    $olafCentralDir = $env:AI_OLAF_TEAM_DIR
-} elseif (Test-Path "$HOME\ai-olaf-team\base-agents") {
-    $olafCentralDir = "$HOME\ai-olaf-team"
+$scriptPath = if ($PSScriptRoot) {
+    $PSScriptRoot
+} elseif ($MyInvocation.MyCommand.Path) {
+    Split-Path -Parent $MyInvocation.MyCommand.Path
+} elseif ($MyInvocation.MyCommand.Definition) {
+    Split-Path -Parent $MyInvocation.MyCommand.Definition
 } else {
-    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-    $parentDir = Split-Path -Parent $scriptDir
-    if (Test-Path (Join-Path $parentDir "base-agents")) {
-        $olafCentralDir = $parentDir
+    $null
+}
+
+$candidates = @(
+    $env:AI_OLAF_TEAM_DIR,
+    [Environment]::GetEnvironmentVariable("AI_OLAF_TEAM_DIR", "User"),
+    (if ($scriptPath) { Split-Path -Parent $scriptPath } else { $null }),
+    "$HOME\ai-olaf-team",
+    "$HOME\Desktop\ai-olaf-team",
+    "$HOME\Masaüstü\ai-olaf-team"
+)
+
+foreach ($c in $candidates) {
+    if ($c -and (Test-Path -LiteralPath (Join-Path $c "base-agents"))) {
+        $olafCentralDir = (Resolve-Path -LiteralPath $c).Path
+        break
     }
 }
 
-if (-not $olafCentralDir -or -not (Test-Path (Join-Path $olafCentralDir "base-agents"))) {
+if (-not $olafCentralDir -or -not (Test-Path -LiteralPath (Join-Path $olafCentralDir "base-agents"))) {
     Write-Host "$cRed❌ HATA: AI Olaf Team merkezi repo dizini bulunamadı!$cReset"
     Write-Host "Lütfen repo dizinini şu şekilde belirtin: `$env:AI_OLAF_TEAM_DIR = 'C:\path\to\ai-olaf-team'"
     exit 1
@@ -69,8 +103,9 @@ New-Item -ItemType Directory -Force -Path $learnedSkillsDir | Out-Null
 New-Item -ItemType Directory -Force -Path $memoryDir | Out-Null
 
 # Merkezi base-agents dosyalarını hedef projeye kopyala
-Get-ChildItem -Path (Join-Path $olafCentralDir "base-agents\*.md") | ForEach-Object {
-    Copy-Item -Path $_.FullName -Destination $baseAgentsDir -Force
+$baseAgentsSource = Join-Path $olafCentralDir "base-agents"
+Get-ChildItem -LiteralPath $baseAgentsSource -Filter "*.md" -File | ForEach-Object {
+    Copy-Item -LiteralPath $_.FullName -Destination $baseAgentsDir -Force
 }
 
 # 3. 15 AJAN İÇİN LEARNED-SKILLS DOSYALARINI BAŞLAT
@@ -95,17 +130,17 @@ $agentsList = @(
 $templateSkillPath = Join-Path $olafCentralDir "templates\learned-skill-template.md"
 $currentDate = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
 
-if (Test-Path $templateSkillPath) {
+if (Test-Path -LiteralPath $templateSkillPath) {
     $templateSkillContent = [System.IO.File]::ReadAllText($templateSkillPath, [System.Text.Encoding]::UTF8)
     foreach ($agent in $agentsList) {
         $skillFile = Join-Path $learnedSkillsDir "$($agent.Key)-skills.md"
-        if (-not (Test-Path $skillFile)) {
+        if (-not (Test-Path -LiteralPath $skillFile)) {
             $content = $templateSkillContent.Replace("{{AGENT_NAME}}", "$($agent.Key.ToUpper()) AGENT")
             $content = $content.Replace("{{AGENT_ROLE}}", $agent.Role)
             $content = $content.Replace("{{AGENT_TAG}}", $agent.Tag)
             $content = $content.Replace("{{LAST_UPDATED}}", $currentDate)
             $content = $content.Replace("{{TRAINING_STATUS}}", "EĞİTİM BEKLİYOR")
-            [System.IO.File]::WriteAllText($skillFile, $content, [System.Text.Encoding]::UTF8)
+            [System.IO.File]::WriteAllText($skillFile, $content, $utf8NoBom)
         }
     }
 }
@@ -114,33 +149,27 @@ if (Test-Path $templateSkillPath) {
 $activeSprintFile = Join-Path $memoryDir "active-sprint.md"
 $templateSprintPath = Join-Path $olafCentralDir "templates\active-sprint-template.md"
 
-if ((-not (Test-Path $activeSprintFile)) -and (Test-Path $templateSprintPath)) {
+if ((-not (Test-Path -LiteralPath $activeSprintFile)) -and (Test-Path -LiteralPath $templateSprintPath)) {
     $sprintContent = [System.IO.File]::ReadAllText($templateSprintPath, [System.Text.Encoding]::UTF8)
     $sprintContent = $sprintContent.Replace("{{SPRINT_TITLE}}", "Sprint 01 - Proje Kurulumu ve Başlangıç")
     $sprintContent = $sprintContent.Replace("{{SPRINT_START_DATE}}", $currentDate)
     $sprintContent = $sprintContent.Replace("{{SPRINT_GOAL}}", "Projenin analizi, mimari temelleri ve ilk sürüm hedefleri")
-    [System.IO.File]::WriteAllText($activeSprintFile, $sprintContent, [System.Text.Encoding]::UTF8)
+    [System.IO.File]::WriteAllText($activeSprintFile, $sprintContent, $utf8NoBom)
 }
 
 # 5. PROJE TÜRÜNÜ TESPİT ET (BROWNFIELD / GREENFIELD)
 Write-Host "`n$cBlue🔍 Proje Röntgeni Çekiliyor ve Kod Taraması Yapılıyor...$cReset"
 
 $sourceExtensions = @("*.cs", "*.java", "*.ts", "*.tsx", "*.js", "*.py", "*.go", "*.rs", "*.php", "*.cpp", "package.json", "pom.xml", "*.csproj", "*.sln")
-$excludeDirs = @(".olaf", ".git", "node_modules", "bin", "obj", ".vs", "dist", "build")
+$excludeDirSet = @(".olaf", ".git", "node_modules", "bin", "obj", ".vs", "dist", "build", ".next", ".nuxt", "vendor")
 
-$allFiles = Get-ChildItem -Path $targetDir -Recurse -File -Depth 4 -ErrorAction SilentlyContinue
 $srcFiles = @()
-if ($allFiles) {
-    foreach ($file in $allFiles) {
-        $rel = $file.FullName.Substring($targetDir.Length)
-        $isExcluded = $false
-        foreach ($ex in $excludeDirs) {
-            if ($rel -match "[\\/]$([regex]::Escape($ex))([\\/]|$)") {
-                $isExcluded = $true
-                break
-            }
-        }
-        if (-not $isExcluded) {
+
+try {
+    # 1. Kök dizindeki dosyalar
+    $rootFiles = Get-ChildItem -LiteralPath $targetDir -File -ErrorAction SilentlyContinue
+    if ($rootFiles) {
+        foreach ($file in $rootFiles) {
             foreach ($pattern in $sourceExtensions) {
                 if ($file.Name -like $pattern) {
                     $srcFiles += $file
@@ -149,6 +178,38 @@ if ($allFiles) {
             }
         }
     }
+
+    # 2. Üst seviye alt dizinler (hariç tutulanlar taranmaz)
+    $subDirs = Get-ChildItem -LiteralPath $targetDir -Directory -ErrorAction SilentlyContinue | Where-Object {
+        $_.Name -notin $excludeDirSet -and $_.Name -notmatch "^\."
+    }
+    if ($subDirs) {
+        foreach ($dir in $subDirs) {
+            $subFiles = Get-ChildItem -LiteralPath $dir.FullName -Recurse -File -Depth 3 -ErrorAction SilentlyContinue
+            if ($subFiles) {
+                foreach ($file in $subFiles) {
+                    $fullName = $file.FullName
+                    $isExcluded = $false
+                    foreach ($ex in $excludeDirSet) {
+                        if ($fullName -match "[\\/]$([regex]::Escape($ex))([\\/]|$)") {
+                            $isExcluded = $true
+                            break
+                        }
+                    }
+                    if (-not $isExcluded) {
+                        foreach ($pattern in $sourceExtensions) {
+                            if ($file.Name -like $pattern) {
+                                $srcFiles += $file
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+} catch {
+    # Tarama sırasında erişim hatası olursa akışı kesme
 }
 
 $srcCount = $srcFiles.Count
@@ -163,24 +224,28 @@ if ($isBrownfield) {
     $trainingStatus = "EĞİTİM GEREKLİ (/olaf-train çalıştırılmalı)"
     Write-Host "$cYellow⚡ Proje Türü:$cReset $projectType ($srcCount kaynak dosya/paket tespit edildi)"
     
-    [System.IO.File]::WriteAllText($trainingFlagFile, "Bu projede mevcut kaynak kodlar tespit edildi. Lütfen /olaf-train komutunu çalıştırarak 15 ajanı eğitin.`n", [System.Text.Encoding]::UTF8)
+    [System.IO.File]::WriteAllText($trainingFlagFile, "Bu projede mevcut kaynak kodlar tespit edildi. Lütfen /olaf-train komutunu çalıştırarak 15 ajanı eğitin.`n", $utf8NoBom)
     
     Write-Host "$cBlue📋 Paket ve Teknoloji Analizi Yapılıyor...$cReset"
     
     # .NET / C#
-    $csprojFiles = Get-ChildItem -Path $targetDir -Filter "*.csproj" -Recurse -Depth 3 -ErrorAction SilentlyContinue | Select-Object -First 5
-    $slnFiles = Get-ChildItem -Path $targetDir -Filter "*.sln" -Depth 2 -ErrorAction SilentlyContinue
+    $csprojFiles = Get-ChildItem -LiteralPath $targetDir -Filter "*.csproj" -Recurse -Depth 3 -ErrorAction SilentlyContinue | Select-Object -First 5
+    $slnFiles = Get-ChildItem -LiteralPath $targetDir -Filter "*.sln" -Depth 2 -ErrorAction SilentlyContinue
     if ($csprojFiles -or $slnFiles) {
         $detectedStack += "- Backend: .NET / C# tespit edildi.`n"
         foreach ($csproj in $csprojFiles) {
-            $relPath = $csproj.FullName.Substring($targetDir.Length).TrimStart('\', '/')
+            $relPath = if ($csproj.FullName.Length -gt $targetDir.Length) {
+                $csproj.FullName.Substring($targetDir.Length).TrimStart('\', '/')
+            } else {
+                $csproj.Name
+            }
             $detectedStack += "  * Proje: $relPath`n"
         }
     }
     
     # Node / Web / Mobil
     $pkgJsonPath = Join-Path $targetDir "package.json"
-    if (Test-Path $pkgJsonPath) {
+    if (Test-Path -LiteralPath $pkgJsonPath) {
         $detectedStack += "- JavaScript/TypeScript Ekosistemi tespit edildi (package.json).`n"
         $pkgContent = [System.IO.File]::ReadAllText($pkgJsonPath, [System.Text.Encoding]::UTF8)
         if ($pkgContent -match "react-native" -or $pkgContent -match "expo") {
@@ -196,36 +261,36 @@ if ($isBrownfield) {
     }
     
     # Java
-    if ((Test-Path (Join-Path $targetDir "pom.xml")) -or (Test-Path (Join-Path $targetDir "build.gradle"))) {
+    if ((Test-Path -LiteralPath (Join-Path $targetDir "pom.xml")) -or (Test-Path -LiteralPath (Join-Path $targetDir "build.gradle"))) {
         $detectedStack += "- Java Ekosistemi tespit edildi (Maven/Gradle).`n"
     }
     
     # Python
-    if ((Test-Path (Join-Path $targetDir "requirements.txt")) -or (Test-Path (Join-Path $targetDir "pyproject.toml"))) {
+    if ((Test-Path -LiteralPath (Join-Path $targetDir "requirements.txt")) -or (Test-Path -LiteralPath (Join-Path $targetDir "pyproject.toml"))) {
         $detectedStack += "- Python Ekosistemi tespit edildi.`n"
     }
     
     # Docker
-    if ((Test-Path (Join-Path $targetDir "Dockerfile")) -or (Test-Path (Join-Path $targetDir "docker-compose.yml"))) {
+    if ((Test-Path -LiteralPath (Join-Path $targetDir "Dockerfile")) -or (Test-Path -LiteralPath (Join-Path $targetDir "docker-compose.yml"))) {
         $detectedStack += "- DevOps: Docker / Docker Compose mevcut.`n"
     }
     
     # GitHub Actions
-    if (Test-Path (Join-Path $targetDir ".github\workflows")) {
+    if (Test-Path -LiteralPath (Join-Path $targetDir ".github\workflows")) {
         $detectedStack += "- CI/CD: GitHub Actions iş akışları mevcut.`n"
     }
     
     # Klasör Özeti
-    $treeItems = Get-ChildItem -Path $targetDir -Depth 1 -ErrorAction SilentlyContinue | Where-Object {
-        $_.Name -notmatch "^\." -and $_.Name -notin @("node_modules", "bin", "obj", ".vs", "dist", "build")
+    $treeItems = Get-ChildItem -LiteralPath $targetDir -ErrorAction SilentlyContinue | Where-Object {
+        $_.Name -notmatch "^\." -and $_.Name -notin $excludeDirSet
     } | Select-Object -First 35
-    $treeSummary = ($treeItems | ForEach-Object { $_.FullName.Substring($targetDir.Length).TrimStart('\', '/') }) -join "`n"
+    $treeSummary = ($treeItems | ForEach-Object { $_.Name }) -join "`n"
 
 } else {
     $projectType = "GREENFIELD (Sıfırdan Proje)"
     $trainingStatus = "HAZIR (Sıfırdan Mimari Başlatılabilir)"
     Write-Host "$cGreen🌱 Proje Türü:$cReset $projectType (Boş proje dizini)"
-    if (Test-Path $trainingFlagFile) { Remove-Item -Path $trainingFlagFile -Force }
+    if (Test-Path -LiteralPath $trainingFlagFile) { Remove-Item -LiteralPath $trainingFlagFile -Force }
     $detectedStack = "Henüz kod eklenmedi. Sıfırdan mimari kurgusu için @pm hazır bekliyor.`n"
     $treeSummary = "."
 }
@@ -234,7 +299,7 @@ if ($isBrownfield) {
 $templateBrainPath = Join-Path $olafCentralDir "templates\project-brain-template.md"
 $brainFile = Join-Path $memoryDir "project-brain.md"
 
-if (Test-Path $templateBrainPath) {
+if (Test-Path -LiteralPath $templateBrainPath) {
     $brainContent = [System.IO.File]::ReadAllText($templateBrainPath, [System.Text.Encoding]::UTF8)
     $brainContent = $brainContent.Replace("{{PROJECT_NAME}}", $projectName)
     $brainContent = $brainContent.Replace("{{PROJECT_TYPE}}", $projectType)
@@ -253,19 +318,23 @@ $detectedStack
 $treeSummary
 ```
 "@
-    [System.IO.File]::WriteAllText($brainFile, $brainContent, [System.Text.Encoding]::UTF8)
+    [System.IO.File]::WriteAllText($brainFile, $brainContent, $utf8NoBom)
 }
 
 # 7. ANTIGRAVITY VE VS CODE WORKFLOW KÖPRÜLERİNİ KUR
-Write-Host "`n$cBlue🌉 Antigravity & IDE Slash Workflows (.agent/workflows) Kuruluyor...$cReset"
-$agentWorkflowsDir = Join-Path $targetDir ".agent\workflows"
-New-Item -ItemType Directory -Force -Path $agentWorkflowsDir | Out-Null
+Write-Host "`n$cBlue🌉 Antigravity & IDE Slash Workflows (.agent/workflows & .agents/workflows) Kuruluyor...$cReset"
+$agentWorkflowsDir1 = Join-Path $targetDir ".agent\workflows"
+$agentWorkflowsDir2 = Join-Path $targetDir ".agents\workflows"
+
+New-Item -ItemType Directory -Force -Path $agentWorkflowsDir1 | Out-Null
+New-Item -ItemType Directory -Force -Path $agentWorkflowsDir2 | Out-Null
 
 $workflowsToCopy = @("olaf-train.md", "pm.md", "sync-skills.md", "review-all.md")
 foreach ($wf in $workflowsToCopy) {
     $srcWf = Join-Path $olafCentralDir "workflows\$wf"
-    if (Test-Path $srcWf) {
-        Copy-Item -Path $srcWf -Destination (Join-Path $agentWorkflowsDir $wf) -Force
+    if (Test-Path -LiteralPath $srcWf) {
+        Copy-Item -LiteralPath $srcWf -Destination (Join-Path $agentWorkflowsDir1 $wf) -Force
+        Copy-Item -LiteralPath $srcWf -Destination (Join-Path $agentWorkflowsDir2 $wf) -Force
     }
 }
 
@@ -315,23 +384,23 @@ Projede kod yazıldığında, bir bug çözüldüğünde veya yeni bir model ekl
 - `@pm` ise `.olaf/memory/project-brain.md` ve `.olaf/memory/active-sprint.md` dosyalarını günceller.
 "@
 
-[System.IO.File]::WriteAllText((Join-Path $targetDir "GEMINI.md"), $masterRules, [System.Text.Encoding]::UTF8)
-[System.IO.File]::WriteAllText((Join-Path $targetDir "AGENTS.md"), $masterRules, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText((Join-Path $targetDir "GEMINI.md"), $masterRules, $utf8NoBom)
+[System.IO.File]::WriteAllText((Join-Path $targetDir "AGENTS.md"), $masterRules, $utf8NoBom)
 
 $idxDir = Join-Path $targetDir ".idx"
 New-Item -ItemType Directory -Force -Path $idxDir | Out-Null
-[System.IO.File]::WriteAllText((Join-Path $idxDir "airules.md"), $masterRules, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText((Join-Path $idxDir "airules.md"), $masterRules, $utf8NoBom)
 
 $geminiDir = Join-Path $targetDir ".gemini"
 New-Item -ItemType Directory -Force -Path $geminiDir | Out-Null
-[System.IO.File]::WriteAllText((Join-Path $geminiDir "styleguide.md"), $masterRules, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText((Join-Path $geminiDir "styleguide.md"), $masterRules, $utf8NoBom)
 
 $githubDir = Join-Path $targetDir ".github"
 New-Item -ItemType Directory -Force -Path $githubDir | Out-Null
-[System.IO.File]::WriteAllText((Join-Path $githubDir "copilot-instructions.md"), $masterRules, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText((Join-Path $githubDir "copilot-instructions.md"), $masterRules, $utf8NoBom)
 
-[System.IO.File]::WriteAllText((Join-Path $targetDir ".cursorrules"), $masterRules, [System.Text.Encoding]::UTF8)
-[System.IO.File]::WriteAllText((Join-Path $targetDir ".clinerules"), $masterRules, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText((Join-Path $targetDir ".cursorrules"), $masterRules, $utf8NoBom)
+[System.IO.File]::WriteAllText((Join-Path $targetDir ".clinerules"), $masterRules, $utf8NoBom)
 
 # 9. VS CODE TASKS ENTEGRASYONU
 $vscodeDir = Join-Path $targetDir ".vscode"
@@ -359,18 +428,21 @@ $tasksJson = @"
   ]
 }
 "@
-[System.IO.File]::WriteAllText((Join-Path $vscodeDir "tasks.json"), $tasksJson, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText((Join-Path $vscodeDir "tasks.json"), $tasksJson, $utf8NoBom)
 
 # 10. GİT POST-COMMIT HOOK ENTEGRASYONU
 $gitDir = Join-Path $targetDir ".git"
-if (Test-Path $gitDir) {
-    Write-Host "$cBlue🔗 Git Post-Commit Hook Entegre Ediliyor...$cReset"
-    $hooksDir = Join-Path $gitDir "hooks"
-    New-Item -ItemType Directory -Force -Path $hooksDir | Out-Null
-    
-    $hookContent = @"
+if (Test-Path -LiteralPath $gitDir) {
+    try {
+        Write-Host "$cBlue🔗 Git Post-Commit Hook Entegre Ediliyor...$cReset"
+        $hooksDir = Join-Path $gitDir "hooks"
+        if (-not (Test-Path -LiteralPath $hooksDir)) {
+            New-Item -ItemType Directory -Force -Path $hooksDir | Out-Null
+        }
+        
+        $hookContent = @"
 #!/usr/bin/env bash
-# AI Olaf Team Git Post-Commit Güncelleyici
+# AI Olaf Team Git Post-Commit Guncelleyici
 if [ -f ".olaf/memory/project-brain.md" ]; then
     LAST_HASH=`$(git log -1 --format="%h" 2>/dev/null)
     LAST_MSG=`$(git log -1 --format="%s" 2>/dev/null)
@@ -383,7 +455,12 @@ if [ -f ".olaf/memory/project-brain.md" ]; then
         mv .olaf/memory/project-brain.tmp .olaf/memory/project-brain.md 2>/dev/null || true
 fi
 "@
-    [System.IO.File]::WriteAllText((Join-Path $hooksDir "post-commit"), $hookContent, [System.Text.Encoding]::UTF8)
+        # Windows Git Bash uyumluluğu için UTF-8 NO BOM ve LF satır sonları ZORUNLUDUR
+        $hookContentLf = $hookContent.Replace("`r`n", "`n")
+        [System.IO.File]::WriteAllText((Join-Path $hooksDir "post-commit"), $hookContentLf, $utf8NoBom)
+    } catch {
+        # Hook yazılamazsa süreci durdurma
+    }
 }
 
 # 11. BAŞARI RAPORU VE KULLANICI BİLGİLENDİRMESİ
