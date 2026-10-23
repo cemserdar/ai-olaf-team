@@ -15,7 +15,11 @@ Kullanıcıdan gelen yeni özellik, hata düzeltme, mimari değişiklik veya opt
 1. `.olaf/memory/TRAINING_REQUIRED.flag` dosyasının varlığını kontrol et:
    - **Eğer bayrak varsa:** "⚠️ Proje henüz eğitilmedi. Önce `/olaf-train` iş akışını başlatıyorum..." diyerek `/olaf-train` akışını tetikle veya kullanıcıya bildir.
    - **Eğer bayrak yoksa:** Bir sonraki adıma geç.
-2. `.olaf/memory/project-brain.md` dosyasını oku ve projenin güncel mimarisini kavra.
+2. **Seçici Hafıza Sorgusu (Selective Retrieval):** Proje mimarisi ve teknoloji yığını gerektiğinde tüm dosyayı yüklemek yerine `scripts/olaf-query-memory.ps1` (veya `.sh`) ile sorgula:
+   ```bash
+   ./scripts/olaf-query-memory.sh --file brain --section tech-stack --max-age 7
+   ```
+   Eğer genel planlama gerekiyorsa tam dosya (`--full`) okunabilir.
 
 ### ADIM 2: KULLANICI TALEBİNİN ANALİZİ VE SPRINT PLANI
 1. Kullanıcının talebini analiz et:
