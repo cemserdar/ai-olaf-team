@@ -110,6 +110,21 @@ New-Item -ItemType Directory -Force -Path $baseAgentsDir | Out-Null
 New-Item -ItemType Directory -Force -Path $learnedSkillsDir | Out-Null
 New-Item -ItemType Directory -Force -Path $memoryDir | Out-Null
 
+$contextsDir = Join-Path $olafDir "contexts"
+$outputsDir = Join-Path $olafDir "outputs"
+$templatesDir = Join-Path $olafDir "templates"
+New-Item -ItemType Directory -Force -Path $contextsDir | Out-Null
+New-Item -ItemType Directory -Force -Path $outputsDir | Out-Null
+New-Item -ItemType Directory -Force -Path $templatesDir | Out-Null
+
+# ÅablonlarÄ± kopyala
+$templatesSource = Join-Path $olafCentralDir "templates"
+if (Test-Path $templatesSource) {
+    Get-ChildItem -LiteralPath $templatesSource -Filter "*.md" -File | ForEach-Object {
+        Copy-Item -LiteralPath $_.FullName -Destination $templatesDir -Force
+    }
+}
+
 # Merkezi base-agents dosyalarını hedef projeye kopyala
 $baseAgentsSource = Join-Path $olafCentralDir "base-agents"
 Get-ChildItem -LiteralPath $baseAgentsSource -Filter "*.md" -File | ForEach-Object {
@@ -385,7 +400,7 @@ $agentWorkflowsDir2 = Join-Path $targetDir ".agents\workflows"
 New-Item -ItemType Directory -Force -Path $agentWorkflowsDir1 | Out-Null
 New-Item -ItemType Directory -Force -Path $agentWorkflowsDir2 | Out-Null
 
-$workflowsToCopy = @("olaf-train.md", "pm.md", "sync-skills.md", "review-all.md", "orchestrate-parallel.md")
+$workflowsToCopy = @("olaf-train.md", "pm.md", "sync-skills.md", "review-all.md", "orchestrate-parallel.md", "context-handover.md")
 foreach ($wf in $workflowsToCopy) {
     $srcWf = Join-Path $olafCentralDir "workflows\$wf"
     if (Test-Path -LiteralPath $srcWf) {
@@ -456,6 +471,12 @@ Projede kod yazıldığında, bir bug çözüldüğünde veya yeni bir model ekl
 
 ---
 
+## ğŸ§¼ CONTEXT BUDGET VE TEMÄ°Z GÃ–REV Ã‡AÄRI PROTOKOLÃœ (CLEAN CONTEXT)
+1. **Brief Olmadan GÃ¶reve BaÅŸlanmaz:** HiÃ§bir ajan serbest sohbet mesajÄ±yla veya belirsiz talimatla Ã§alÄ±ÅŸmaz. Her gÃ¶rev iÃ§in .olaf/contexts/TASK-XX-brief.md dosyasÄ± oluÅŸturulmalÄ±dÄ±r.
+2. **KatÄ± Dosya KapsamÄ± (File Scope):** Ajan yalnÄ±zca brief'te belirtilen READ ONLY ve WRITE ALLOWED dosyalarÄ±yla sÄ±nÄ±rlÄ±dÄ±r. Kapsam dÄ±ÅŸÄ±ndaki hiÃ§bir dosya aÃ§Ä±lamaz veya deÄŸiÅŸtirilemez.
+3. **Ã‡Ä±ktÄ± Manifestosu StandartÄ±:** GÃ¶rev tamamlandÄ±ÄŸÄ±nda ajan Ã¶zetini .olaf/outputs/TASK-XX-output.md dosyasÄ±na yazar. BaÄŸÄ±mlÄ± gÃ¶revler yalnÄ±zca bu manifestoyu referans alÄ±r; sohbet geÃ§miÅŸi taÅŸÄ±nmaz.
+
+---
 ## 🛡️ GİT VE COMMIT İZOLASYON PROTOKOLÜ (HAYALET EKİP KURALI)
 AI Olaf Team altyapı dosyaları (`.olaf/`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, `.clinerules`, `.agent/`, `.agents/`, `.gemini/`, `.idx/`) yalnızca yerel asistanlık ve takım orkestrasyonu içindir:
 - **ASLA COMMIT EDİLMEZ:** Hiçbir ajan veya otomasyon, AI Olaf Team altyapı ve kural dosyalarını Git reposuna stage edemez veya commit edemez.

@@ -82,10 +82,35 @@ case "$ACTION" in
             fi
         fi
 
+        # Context Brief ve Output dizinlerini hazırla
+        mkdir -p "$REPO_ROOT/.olaf/contexts"
+        mkdir -p "$REPO_ROOT/.olaf/outputs"
+
+        BRIEF_FILE="$REPO_ROOT/.olaf/contexts/$NORM_TASK-brief.md"
+        if [ ! -f "$BRIEF_FILE" ]; then
+            HEAD_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo "HEAD")
+            NOW_DATE=$(date "+%Y-%m-%d %H:%M" 2>/dev/null || echo "")
+            TMPL_PATH="$REPO_ROOT/templates/task-context-brief-template.md"
+            if [ ! -f "$TMPL_PATH" ]; then
+                TMPL_PATH="$REPO_ROOT/.olaf/templates/task-context-brief-template.md"
+            fi
+            if [ -f "$TMPL_PATH" ]; then
+                sed -e "s/{{TASK_ID}}/$NORM_TASK/g" \
+                    -e "s/{{RESPONSIBLE_AGENT}}/$AGENT/g" \
+                    -e "s/{{CREATED_AT}}/$NOW_DATE/g" \
+                    -e "s/{{SNAPSHOT_COMMIT_HASH}}/$HEAD_HASH/g" \
+                    "$TMPL_PATH" > "$BRIEF_FILE"
+            else
+                echo -e "# CONTEXT BRIEF — $NORM_TASK\nTask: $NORM_TASK\nAgent: $AGENT\nSnapshot: $HEAD_HASH" > "$BRIEF_FILE"
+            fi
+        fi
+
         echo -e "${COLOR_BOLD}${COLOR_GREEN}✅ [@devops] Worktree hazır!${COLOR_RESET}"
         echo -e "   📂 Dizin : ${COLOR_CYAN}$WORKTREE_DIR${COLOR_RESET}"
         echo -e "   🌿 Branch: ${COLOR_CYAN}$BRANCH_NAME${COLOR_RESET}"
         echo -e "   👤 Ajan  : ${COLOR_YELLOW}$AGENT${COLOR_RESET}"
+        echo -e "   📋 Brief : ${COLOR_YELLOW}$BRIEF_FILE${COLOR_RESET}"
+        echo -e "   👉 $AGENT artık yalnızca bu dizinde ve brief dosyasındaki kapsamda çalışabilir.\n"
         ;;
 
     list)

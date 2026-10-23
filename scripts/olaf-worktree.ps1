@@ -1,4 +1,4 @@
-<#
+﻿<#
 ==============================================================================
 AI OLAF TEAM - PARALEL WORKTREE VE RELEASE GATEKEEPER MOTORU (olaf-worktree.ps1)
 ==============================================================================
@@ -115,11 +115,41 @@ if ($Action -eq "start") {
         }
     }
 
+    # Context Brief ve Output dizinlerini hazırla
+    $contextsDir = Join-Path $repoRoot ".olaf\contexts"
+    $outputsDir = Join-Path $repoRoot ".olaf\outputs"
+    if (-not (Test-Path $contextsDir)) { New-Item -ItemType Directory -Force -Path $contextsDir | Out-Null }
+    if (-not (Test-Path $outputsDir)) { New-Item -ItemType Directory -Force -Path $outputsDir | Out-Null }
+
+    $briefFile = Join-Path $contextsDir "$normTask-brief.md"
+    if (-not (Test-Path $briefFile)) {
+        $headHash = git rev-parse --short HEAD 2>$null
+        if (-not $headHash) { $headHash = "HEAD" }
+        $nowDate = (Get-Date).ToString("yyyy-MM-dd HH:mm")
+
+        $tmplPath = Join-Path $repoRoot "templates\task-context-brief-template.md"
+        if (-not (Test-Path $tmplPath)) {
+            $tmplPath = Join-Path $repoRoot ".olaf\templates\task-context-brief-template.md"
+        }
+        if (Test-Path $tmplPath) {
+            $briefContent = [System.IO.File]::ReadAllText($tmplPath, [System.Text.Encoding]::UTF8)
+            $briefContent = $briefContent.Replace("{{TASK_ID}}", $normTask)
+            $briefContent = $briefContent.Replace("{{RESPONSIBLE_AGENT}}", $Agent)
+            $briefContent = $briefContent.Replace("{{CREATED_AT}}", $nowDate)
+            $briefContent = $briefContent.Replace("{{SNAPSHOT_COMMIT_HASH}}", $headHash)
+            [System.IO.File]::WriteAllText($briefFile, $briefContent, [System.Text.Encoding]::UTF8)
+        } else {
+            $fallback = "# CONTEXT BRIEF - $normTask`r`n`r`nTask: $normTask`r`nAgent: $Agent`r`nSnapshot: $headHash`r`n"
+            [System.IO.File]::WriteAllText($briefFile, $fallback, [System.Text.Encoding]::UTF8)
+        }
+    }
+
     Write-Host "$cBold$cGreen✅ [@devops] Worktree hazır!$cReset"
     Write-Host "   📂 Dizin : $cCyan$worktreeDir$cReset"
     Write-Host "   🌿 Branch: $cCyan$branchName$cReset"
     Write-Host "   👤 Ajan  : $cYellow$Agent$cReset"
-    Write-Host "   👉 $Agent artık yalnızca bu dizinde çalışabilir.`n"
+    Write-Host "   📋 Brief : $cYellow$briefFile$cReset"
+    Write-Host "   👉 $Agent artık yalnızca bu dizinde ve brief dosyasındaki kapsamda çalışabilir.`n"
     exit 0
 }
 

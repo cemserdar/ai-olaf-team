@@ -58,6 +58,14 @@ echo -e "\n${COLOR_BLUE}📂 .olaf Hafıza ve Yetenek Dizinleri Oluşturuluyor..
 mkdir -p "$TARGET_DIR/.olaf/base-agents"
 mkdir -p "$TARGET_DIR/.olaf/learned-skills"
 mkdir -p "$TARGET_DIR/.olaf/memory"
+mkdir -p "$TARGET_DIR/.olaf/contexts"
+mkdir -p "$TARGET_DIR/.olaf/outputs"
+mkdir -p "$TARGET_DIR/.olaf/templates"
+
+# Şablonları kopyala
+if [ -d "$OLAF_CENTRAL_DIR/templates" ]; then
+    cp -r "$OLAF_CENTRAL_DIR/templates/"*.md "$TARGET_DIR/.olaf/templates/" 2>/dev/null || true
+fi
 
 # Merkezi base-agents dosyalarını hedef projeye kopyala
 cp -r "$OLAF_CENTRAL_DIR/base-agents/"*.md "$TARGET_DIR/.olaf/base-agents/"
@@ -271,6 +279,7 @@ cp -f "$OLAF_CENTRAL_DIR/workflows/pm.md" "$TARGET_DIR/.agent/workflows/pm.md"
 cp -f "$OLAF_CENTRAL_DIR/workflows/sync-skills.md" "$TARGET_DIR/.agent/workflows/sync-skills.md"
 cp -f "$OLAF_CENTRAL_DIR/workflows/review-all.md" "$TARGET_DIR/.agent/workflows/review-all.md"
 cp -f "$OLAF_CENTRAL_DIR/workflows/orchestrate-parallel.md" "$TARGET_DIR/.agent/workflows/orchestrate-parallel.md"
+cp -f "$OLAF_CENTRAL_DIR/workflows/context-handover.md" "$TARGET_DIR/.agent/workflows/context-handover.md"
 
 # Worktree ve Entegrasyon Betiklerini Kopyala
 mkdir -p "$TARGET_DIR/.olaf/scripts"
@@ -329,6 +338,13 @@ Projede kod yazıldığında, bir bug çözüldüğünde veya yeni bir model ekl
 1. **Tüm 15 Ajan İçin Geçerlidir - Birbirini Bloklamayan İşler Paralel Yapılır:** Ekipteki 15 ajanın tamamı bağımsızlık durumuna göre paralel çalışır. Yalnızca backend ve mobil değil; geliştirme devam ederken `@devops` (CI/CD, Docker), `@legal` (Lisans ve KVKK), `@docs` (Dokümantasyon) ve `@qa` (Test senaryoları) gibi bağımsız tüm iş paketleri eş zamanlı yürütülür.
 2. **Yalnızca Bloklayıcı Bağımlılıklar Sıralı Bekler:** Bir ajan yalnızca kendisini teknik olarak bloklayan ön koşul görev tamamlanmadığında bekler (Örn: `@db` şema ve migration'ı bitirmeden `@backend` veritabanı sorgusu yazamaz; API/DTO sözleşmesi netleşmeden nihai mobil entegrasyon tamamlanamaz). Ortak veri/API sözleşmesi belirlendiği andan itibaren backend, mobil, web ve altyapı işleri paralel ilerler.
 3. **Çok Kulvarlı Koordinasyon:** `@pm` işleri analiz ederken bağımsız iş paketlerini tespit eder ve eş zamanlı yürütülecek kulvarlara (`Track 1: Backend/DB`, `Track 2: Mobil`, `Track 3: Web`, `Track 4: DevOps`, `Track 5: Legal`, `Track 6: QA/Docs` vb.) dağıtır.
+
+---
+
+## 🧼 CONTEXT BUDGET VE TEMİZ GÖREV ÇAĞRI PROTOKOLÜ (CLEAN CONTEXT)
+1. **Brief Olmadan Göreve Başlanmaz:** Hiçbir ajan serbest sohbet mesajıyla veya belirsiz talimatla çalışmaz. Her görev için `.olaf/contexts/TASK-XX-brief.md` dosyası oluşturulmalıdır.
+2. **Katı Dosya Kapsamı (File Scope):** Ajan yalnızca brief'te belirtilen `READ ONLY` ve `WRITE ALLOWED` dosyalarıyla sınırlıdır. Kapsam dışındaki hiçbir dosya açılamaz veya değiştirilemez.
+3. **Çıktı Manifestosu Standartı:** Görev tamamlandığında ajan özetini `.olaf/outputs/TASK-XX-output.md` dosyasına yazar. Bağımlı görevler yalnızca bu manifestoyu referans alır; sohbet geçmişi taşınmaz.
 
 ---
 

@@ -69,4 +69,11 @@ Boş veya yeni başlayan bir projede orkestrasyonu şu sırayla yönetirsin:
             [@security & @qa Doğrulama & @refactor Temizlik & @docs Dokümantasyon]
                                                    │
                                             [@pm Teslimat]
-```
+---
+
+## 6. CONTEXT BUDGET VE TEMİZ GÖREV ÇAĞRI PROTOKOLÜ (CLEAN CONTEXT & HANDOVER)
+1. **Context Brief Zorunluluğu:** Alt ajanlara (`@backend`, `@mobile`, `@frontend` vb.) doğrudan sözlü veya serbest metinle iş emri verilmez. Her görev için mutlaka `.olaf/contexts/TASK-XX-brief.md` dosyası oluşturulur. Brief dosyası hazır olmayan görev başlatılamaz.
+2. **Sıfır Geçmiş Sohbet Kirliliği:** Ajan çağrılırken geçmiş sprint konuşmaları, diğer ajanların ara tartışmaları veya global sohbet aktarılmaz. Ajan yalnızca kendi görev brief'i, kabul kriterleri (DoD) ve dosya kapsamı ile başlatılır.
+3. **Katı Dosya Kapsamı (File Scope Enforcement):** Brief içinde ajanın okuyabileceği (`READ ONLY`) ve değiştirebileceği (`WRITE ALLOWED`) dosyalar kesin sınırlarla belirtilir. Ajan kapsam dışındaki dosyalara dokunamaz.
+4. **Çıktı Manifestosu ve Zincirleme Devir (Handover):** Görev tamamlandığında ajanın `.olaf/outputs/TASK-XX-output.md` dosyasını eksiksiz doldurduğu kontrol edilir. Bağımlı sonraki görevler, önceki işin sohbet loglarını değil yalnızca bu çıktı manifestosunu girdi olarak alır.
+5. **Tekrarlanabilirlik (Reproducibility):** Her brief dosyasına mevcut Git snapshot hash'i (`git rev-parse --short HEAD`) işlenir. Aynı girdi, aynı hash ve aynı brief ile icra edilen her görev deterministik olarak aynı sonucu üretmelidir.

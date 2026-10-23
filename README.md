@@ -46,6 +46,7 @@ Geleneksel AI prompt sistemlerinin en büyük sorunu şudur: Her projede aynı g
 
 1. **Sabit Çekirdek DNA (`base-agents/`):** Ajanların genel mühendislik bilgisi, SOLID kuralları, güvenlik hassasiyetleri ve mesleki refleksleridir. Projeden bağımsız olarak `~/ai-olaf-team/` altında yaşar.
 2. **Projeye Özel Dinamik Hafıza (`.olaf/learned-skills/`):** Takım bir projeye girdiğinde, o projenin kaynak kodlarını okur. Örneğin `@backend` ajanı projede Entity Framework Core kullanıldığını, servislerin `ServiceResult<T>` döndürdüğünü ve Dapper'ın yasak olduğunu anlar ve bunu bizzat kendi `backend-skills.md` dosyasına yazar.
+3. **Temiz Context ve Görev Devir Protokolü (`.olaf/contexts/` & `.olaf/outputs/`):** Ajanlar geçmiş sohbet kirliliğini belleğe yüklemez. Her görev için `@pm` izole bir Context Brief üretir; ajan yalnızca izin verilen dosya kapsamı (`File Scope`) içinde çalışır ve çıktısını standart manifesto dosyasına yazar. Bağımlı görevler yalnızca bu manifestoyu referans alır.
 
 ---
 
@@ -215,6 +216,7 @@ Antigravity IDE ve VS Code içinde doğrudan kullanabileceğiniz hazır slash ko
 | **`/sync-skills`** | Git diff ve dosya değişikliklerini tarayarak ajanların hafıza dosyalarını günceller. | Değişiklikten etkilenen tüm ajanlar |
 | **`/review-all`** | Projeyi Mimari, Güvenlik, Performans, Test ve Hukuk açısından denetler, birleşik rapor sunar. | `@architect`, `@security`, `@refactor`, `@qa`, `@legal` |
 | **`/orchestrate-parallel`** | Bağımsız işleri izole Git Worktree alanlarında paralel çalıştırır, `@devops` ile test kapısından geçirip Squash Merge eder. | `@pm`, `@devops`, `@architect` ve atanan paralel ajanlar |
+| **`/context-handover`** | Her ajan çağrısını temiz context brief'i, dosya kapsamı kısıtı ve çıktı manifestosu ile yönetir; bağlam kirliliğini sıfırlar. | `@pm` ve atanan tüm uzman ajanlar |
 
 ---
 

@@ -28,6 +28,10 @@ Kullanıcıdan gelen yeni özellik, hata düzeltme, mimari değişiklik veya opt
    - Görevleri alt iş paketlerine (`TASK-01`, `TASK-02`...) böl.
    - **Bağımlılık Analizi Yap:** Birbirini bloklamayan görevleri belirle ve **paralel kulvarlara (Kulvar A: Backend, Kulvar B: Mobil vb.)** ayır.
    - Yalnızca teknik olarak birbirine bağımlı olan görevlere sıralı önkoşul (blocking dependency) tanımla.
+3. **Temiz Context Brief Hazırla (`/context-handover`):**
+   - Her görev için `templates/task-context-brief-template.md` şablonunu kullanarak `.olaf/contexts/TASK-XX-brief.md` dosyasını üret.
+   - Dosya kapsamını (`READ ONLY` ve `WRITE ALLOWED`) netleştir; kapsam dışını yasakla.
+   - Ajanları çağırırken geçmiş sohbeti değil, yalnızca bu brief dosyasını aktar. Brief hazır olmadan ajan çağrılamaz.
 
 ### ADIM 3: AJANLARIN İCRASI (15 AJAN İÇİN ÇOK KULVARLI PARALEL İCRA MATRİSİ)
 `@pm` olarak 15 kişilik ekibin tamamını bağımsızlık durumuna göre paralel kulvarlarda koordine et:
@@ -74,9 +78,10 @@ Kulvarlardaki işler tamamlandığında entegrasyon ve denetim adımları devrey
 
 ### ADIM 4: SÜREKLİ ÖĞRENME VE HAFIZA GÜNCELLEME KONTROLÜ
 İş tamamlandığında `@pm` şu kontrolleri zorunlu kılar:
-1. Görevde aktif rol alan her ajan, `.olaf/learned-skills/<agent>-skills.md` dosyasına yeni eklenen modelleri, kuralları veya dikkat edilmesi gereken noktaları yazdı mı?
-2. `.olaf/memory/project-brain.md` dosyasındaki teknoloji, entity veya endpoint listesi güncellendi mi?
-3. `.olaf/memory/active-sprint.md` içindeki görevlerin durumu "Tamamlandı" olarak işaretlendi mi?
+1. Görevde aktif rol alan her ajan, `.olaf/outputs/TASK-XX-output.md` çıktı manifestosunu eksiksiz doldurdu mu ve yalnızca izin verilen dosya kapsamı içinde kaldı mı?
+2. Görevde aktif rol alan her ajan, `.olaf/learned-skills/<agent>-skills.md` dosyasına yeni eklenen modelleri, kuralları veya dikkat edilmesi gereken noktaları yazdı mı?
+3. `.olaf/memory/project-brain.md` dosyasındaki teknoloji, entity veya endpoint listesi güncellendi mi?
+4. `.olaf/memory/active-sprint.md` içindeki görevlerin durumu "Tamamlandı" olarak işaretlendi mi?
 
 ### ADIM 5: KULLANICIYA YÖNETİCİ ÖZETİ RAPORU SUNMA
 Kullanıcıya son derece profesyonel, maddeler halinde Türkçe bir teslimat özeti sun:
