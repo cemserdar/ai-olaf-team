@@ -73,3 +73,4 @@ Görev tamamlandığında:
 2. `.olaf/outputs/{{TASK_ID}}-output.md` dosyasına standart manifesti yaz.
 3. `.olaf/learned-skills/{{AGENT_SKILL_FILE}}` dosyasını yeni öğrenilen kurallarla güncelle.
 4. `@pm`'e tek cümlelik başarı özeti bildir.
+

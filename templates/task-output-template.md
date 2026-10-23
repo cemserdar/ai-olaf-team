@@ -46,3 +46,4 @@
 - [ ] Kod derlendi / sözdizim hatası yok (`dotnet build` / `npm run build` vb. uyumlu).
 - [ ] Gerekli birim testler hazırlandı / çalıştırıldı.
 - [ ] `.olaf/learned-skills/{{AGENT_SKILL_FILE}}` güncellendi.
+

@@ -297,11 +297,15 @@ AI Olaf Team, projelerinize yardımcı olmak için bağlanan **"Hayalet Bir Müh
 │   ├── olaf-train.md               # /olaf-train : Projeyi baştan aşağı tarar ve eğitir
 │   ├── pm.md                       # /pm : PM ajanını başlatır ve koordine eder
 │   ├── sync-skills.md              # /sync-skills : Son kod değişikliklerini hafızaya işler
-│   └── review-all.md               # /review-all : Çoklu ajan denetim raporu sunar
+│   ├── review-all.md               # /review-all : Çoklu ajan denetim raporu sunar
+│   ├── orchestrate-parallel.md     # /orchestrate-parallel : 15 ajanlı paralel Git Worktree orkestrasyonu
+│   └── context-handover.md         # /context-handover : Temiz context bütçesi ve görev devri
 ├── templates/                      # Projeye kopyalanacak boş hafıza ve yetenek şablonları
 │   ├── learned-skill-template.md   # Her ajanın projeye özel dolduracağı skill şablonu
 │   ├── project-brain-template.md   # Projenin mimari beyni ve teknoloji haritası şablonu
-│   └── active-sprint-template.md   # Aktif görev ve ajan takip tahtası şablonu
+│   ├── active-sprint-template.md   # Aktif görev ve 7 paralel kulvar takip tahtası şablonu
+│   ├── task-context-brief-template.md # Görev öncesi izole context brief şablonu
+│   └── task-output-template.md     # Görev tamamlama ve çıktı manifestosu şablonu
 ├── install-windows.bat             # Windows: Tek tıkla otomatik kurulum sihirbazı başlatıcısı
 ├── scripts/
 │   ├── olaf-init.sh                # Linux & macOS: Projeye takımı bağlayan entegrasyon betiği (Bash)
@@ -309,10 +313,97 @@ AI Olaf Team, projelerinize yardımcı olmak için bağlanan **"Hayalet Bir Müh
 │   ├── olaf-init.ps1               # Windows: PowerShell ile projeye takımı bağlayan entegrasyon motoru
 │   ├── olaf-init.cmd               # Windows: CMD / Terminal başlatıcısı (Bypass korumalı)
 │   ├── install-global-alias.ps1    # Windows: PowerShell Profiline ve PATH'e 'olaf-init' ekleyen sihirbaz
-│   └── install-windows.bat         # Windows: scripts içi yedek tek tık başlatıcı
+│   ├── install-windows.bat         # Windows: scripts içi yedek tek tık başlatıcı
+│   ├── olaf-worktree.ps1           # Windows: İzole Git Worktree, Squash Merge & Release Kapısı motoru
+│   └── olaf-worktree.sh            # Linux & macOS: İzole Git Worktree motoru (Bash)
 ├── .gitignore                      # Git yoksayma kuralları
 └── README.md                       # Çok detaylı Türkçe Kullanım ve Senkronizasyon Kılavuzu
 ```
+
+---
+
+## ⚡ 10. ÇOK KULVARLI PARALEL İCRA VE DEVOPS RELEASE KAPISI (`/orchestrate-parallel`)
+
+AI Olaf Team, 15 ajanın tamamını bağımsızlık durumuna göre paralel kulvarlarda çalıştırmak üzere **Git Worktree Tabanlı Çok Kulvarlı Orkestrasyon** mimarisini benimser.
+
+```text
+                     [@pm Sprint Planlama & Görev Dağıtımı]
+                                        │
+    ┌──────────────────────┬────────────┴────────────┬──────────────────────┐
+    ▼                      ▼                         ▼                      ▼
+[Kulvar A: Backend]   [Kulvar B: Mobil]        [Kulvar C: DevOps]     [Kulvar D: QA/Docs]
+(.olaf/worktrees/     (.olaf/worktrees/        (.olaf/worktrees/      (.olaf/worktrees/
+ task-01)              task-02)                 task-03)               task-04)
+    │                      │                         │                      │
+    └──────────────────────┴────────────┬────────────┴──────────────────────┘
+                                        ▼
+                   [@devops Release Gatekeeper & Merge Queue]
+                                        │
+                         1. Sıralı Squash Merge
+                         2. Otomatik Semantik Çakışma Çözümü (Lvl 1 & 2)
+                         3. Kalite Kapısı (Build & Test)
+                         4. Temiz 'main' Entegrasyonu & Worktree Temizliği
+```
+
+### 🔑 Temel Prensipler:
+1. **İzole Çalışma Alanı (Git Worktrees):** Her bağımsız görev (`TASK-XX`), `.olaf/worktrees/task-xx/` dizininde kendi fiziksel çalışma alanına ve `task/task-xx` branch'ine sahiptir. Ajanlar birbirinin kodunu ezemez.
+2. **Tek Yetkili Git Gatekeeper (`@devops`):** Bireysel geliştirici ajanlar (`@backend`, `@mobile`, `@frontend`) asla doğrudan `main` dalına merge yapamaz. `main` dalına resmi entegrasyon yetkisi **yalnızca `@devops`** ajanındadır.
+3. **Squash Merge ile Temiz Tarihçe:** Görev içindeki çok sayıda ara commit `main` dalına tekil, anlamlı bir commit (`feat(task-xx): ...`) olarak yansıtılır.
+4. **Kalite Kapısı (Quality Gate):** Merge öncesinde `dotnet build` veya `npm test` otomatik koşturulur. Hata varsa merge reddedilir ve `main` korunur.
+5. **Otomatik Çakışma Çözümü (Conflict Resolution):** `package.json`, `.csproj` gibi paket dosyalarında çakışma çıkarsa sistem her iki tarafın paketlerini birleştirerek otomatik çözer.
+
+### 🛠️ Worktree Motoru Komutları:
+```powershell
+# Windows PowerShell:
+.olaf\scripts\olaf-worktree.ps1 -Action start -TaskId "TASK-01" -Agent "@backend"
+.olaf\scripts\olaf-worktree.ps1 -Action list
+.olaf\scripts\olaf-worktree.ps1 -Action status -TaskId "TASK-01"
+.olaf\scripts\olaf-worktree.ps1 -Action merge -TaskId "TASK-01" -Agent "@backend"
+.olaf\scripts\olaf-worktree.ps1 -Action cleanup -TaskId "TASK-01"
+
+# Linux & macOS (Bash):
+./.olaf/scripts/olaf-worktree.sh start TASK-01 "@backend"
+./.olaf/scripts/olaf-worktree.sh list
+./.olaf/scripts/olaf-worktree.sh merge TASK-01 "@backend"
+./.olaf/scripts/olaf-worktree.sh cleanup TASK-01
+```
+
+---
+
+## 🧼 11. TEMİZ CONTEXT BÜTÇESİ VE GÖREV DEVİR PROTOKOLÜ (`/context-handover`)
+
+Herhangi bir ajana iş verilirken önceki konuşmaların tüm sohbet geçmişini belleğe taşımak token maliyetini katlar, ajanın dikkatini dağıtır ve kod kalitesini düşürür. AI Olaf Team, **Temiz Context ve Çift Manifestolu Devir Standardı** uygular.
+
+```text
+[@pm] ──(1. Brief Yaz)──► [.olaf/contexts/TASK-01-brief.md]
+                                   │
+                         (2. Temiz Çağrı)
+                                   ▼
+                            [@backend İcra]
+                      (Yalnızca File Scope'a dokunur)
+                                   │
+                         (3. Output Manifestosu)
+                                   ▼
+                       [.olaf/outputs/TASK-01-output.md]
+                                   │
+      ┌────────────────────────────┴───────────────────────────┐
+      ▼                                                        ▼
+[@pm Sprint Denetimi]                     [@mobile / TASK-02 Brief'ine Linklenir]
+(Gereksiz sohbet geçmişi sıfırlanır)       (Yalnızca kontrat ve DTO'ları okur)
+```
+
+### ⚖️ Context Budget: Ne Girer, Ne Girmez?
+| ✅ Context'e GİREN Veriler | ❌ Context'e ASLA GİRMEYENLER |
+| :--- | :--- |
+| **Görev Kimliği & Hedefi:** `TASK-XX` ve kabul kriterleri (DoD) | **Geçmiş Sohbet:** Önceki sprint veya görev sohbet geçmişi |
+| **Dosya Kapsamı (File Scope):** Sadece okunacak/yazılacak dosyalar | **İlgisiz Dosyalar:** Görevle doğrudan bağı olmayan dosyalar |
+| **Öncel Çıktı:** Bağımlı görevin `.olaf/outputs/TASK-YY-output.md` dosyası | **Diğer Kulvarlar:** Paralel yürüyen bağımsız kulvarların iç detayları |
+| **Ajan DNA:** `base-agents/<agent>.md` + `learned-skills/<agent>-skills.md` | **Tüm Kod Tabanı Taraması:** Gereksiz global aramalar |
+| **Snapshot Hash:** Görevin başladığı andaki Git commit hash'i | **Kullanıcı Ara Sohbetleri:** Görev dışı genel diyaloglar |
+
+### 📐 Reproducibility (Tekrarlanabilirlik) Garantisi:
+Her Context Brief başlangıç Git Snapshot Hash'ini içerir. Aynı girdi, aynı hash ve aynı brief ile icra edilen her görev deterministik olarak aynı sonucu üretir:
+$$\text{Deterministik Sonuç} = f(\text{Context Brief}, \text{Snapshot Hash}, \text{Predecessor Outputs})$$
 
 ---
 

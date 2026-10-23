@@ -91,3 +91,4 @@ $$\text{Deterministik Çıktı} = f(\text{Context Brief}, \text{Snapshot Commit 
 - **Doğrulama 1 (Hash Tutarlılığı):** Brief içindeki Git Snapshot Hash ile kodun taban sürümü eşleşmelidir.
 - **Doğrulama 2 (Kapsam İzolasyonu):** Görev çıktı manifestosundaki değiştirilen dosyalar, brief'teki yazılabilir kapsam listesini aşamaz.
 - **Doğrulama 3 (Arayüz Uyumu):** Bağımlı görev çıktısı, öncel görevin manifesto kontratlarına tam uyum sağlamalıdır.
+
