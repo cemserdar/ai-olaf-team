@@ -304,7 +304,9 @@ cp -f "$OLAF_CENTRAL_DIR/workflows/context-handover.md" "$TARGET_DIR/.agent/work
 mkdir -p "$TARGET_DIR/.olaf/scripts"
 cp -f "$OLAF_CENTRAL_DIR/scripts/olaf-worktree.sh" "$TARGET_DIR/.olaf/scripts/olaf-worktree.sh"
 cp -f "$OLAF_CENTRAL_DIR/scripts/olaf-worktree.ps1" "$TARGET_DIR/.olaf/scripts/olaf-worktree.ps1"
-chmod +x "$TARGET_DIR/.olaf/scripts/olaf-worktree.sh" 2>/dev/null || true
+cp -f "$OLAF_CENTRAL_DIR/scripts/olaf-query-memory.sh" "$TARGET_DIR/.olaf/scripts/olaf-query-memory.sh"
+cp -f "$OLAF_CENTRAL_DIR/scripts/olaf-query-memory.ps1" "$TARGET_DIR/.olaf/scripts/olaf-query-memory.ps1"
+chmod +x "$TARGET_DIR/.olaf/scripts/olaf-worktree.sh" "$TARGET_DIR/.olaf/scripts/olaf-query-memory.sh" 2>/dev/null || true
 
 # 8. ÇOKLU IDE MASTER KURAL KÖPRÜLERİNİ OLUŞTUR
 echo -e "${COLOR_BLUE}📜 Çoklu IDE Kural Köprüleri (GEMINI.md, AGENTS.md, .cursorrules vb.) Oluşturuluyor...${COLOR_RESET}"

@@ -429,6 +429,10 @@ $wtPs1 = Join-Path $olafCentralDir "scripts\olaf-worktree.ps1"
 $wtSh = Join-Path $olafCentralDir "scripts\olaf-worktree.sh"
 if (Test-Path -LiteralPath $wtPs1) { Copy-Item -LiteralPath $wtPs1 -Destination (Join-Path $olafScriptsDir "olaf-worktree.ps1") -Force }
 if (Test-Path -LiteralPath $wtSh) { Copy-Item -LiteralPath $wtSh -Destination (Join-Path $olafScriptsDir "olaf-worktree.sh") -Force }
+$qmPs1 = Join-Path $olafCentralDir "scripts\olaf-query-memory.ps1"
+$qmSh = Join-Path $olafCentralDir "scripts\olaf-query-memory.sh"
+if (Test-Path -LiteralPath $qmPs1) { Copy-Item -LiteralPath $qmPs1 -Destination (Join-Path $olafScriptsDir "olaf-query-memory.ps1") -Force }
+if (Test-Path -LiteralPath $qmSh) { Copy-Item -LiteralPath $qmSh -Destination (Join-Path $olafScriptsDir "olaf-query-memory.sh") -Force }
 
 # 8. ÇOKLU IDE MASTER KURAL KÖPRÜLERİNİ OLUŞTUR
 Write-Host "$cBlue📜 Çoklu IDE Kural Köprüleri (GEMINI.md, AGENTS.md, .cursorrules vb.) Oluşturuluyor...$cReset"
