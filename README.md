@@ -265,6 +265,17 @@ AI Olaf Team, projelerinize yardımcı olmak için bağlanan **"Hayalet Bir Müh
    Bir projede `olaf-init` çalıştırıldığında, projenin `.git/info/exclude` ve kök `.gitignore` dosyalarına izolasyon kuralları eklenir. `git status` çıktısında Olaf dosyaları untracked olarak bile listelenmez.
 3. **Kademe 3 - Pre-Commit Guard (Son Savunma Hattı):**
    Geliştirici veya bir IDE eklentisi kazara `git add .` veya zorla stage işlemi yapsa dahi, `.git/hooks/pre-commit` kancası commit anında devreye girer. Olaf dosyalarını otomatik olarak `un-stage` yapar ve sadece projenin kaynak kodlarının commit edilmesini sağlar.
+   > **Mevcut Hook'ları Koruma Güvencesi:** Projenizde zaten var olan `eslint`, `prettier` veya birim test kancaları asla silinmez. Olaf Guard kancanın sonuna eklenir. Eğer projenin kendi lint/test kontrolleri hata verirse, commit **durdurulur**. Hata düzeltildiğinde ise commit devam eder ve Olaf dosyaları commit dışı bırakılır.
+
+#### 🧪 Canlı Pre-Commit & Ghost Modu Testi:
+Mevcut hook'ların korunduğunu ve lint hatası anında commit'in durduğunu kendiniz test etmek için:
+```powershell
+# Windows PowerShell:
+.\scripts\demo-hook-test.ps1
+
+# Linux & macOS (Bash):
+./scripts/demo-hook-test.sh
+```
 
 ### 🔄 Bilgisayarlar Arası Senkronizasyon:
 - Ekibin temel beyni, 15 ajanın mesleki DNA'sı ve iş akışları `~/ai-olaf-team/` merkezi repo dizininizde yaşar.
@@ -315,7 +326,9 @@ AI Olaf Team, projelerinize yardımcı olmak için bağlanan **"Hayalet Bir Müh
 │   ├── install-global-alias.ps1    # Windows: PowerShell Profiline ve PATH'e 'olaf-init' ekleyen sihirbaz
 │   ├── install-windows.bat         # Windows: scripts içi yedek tek tık başlatıcı
 │   ├── olaf-worktree.ps1           # Windows: İzole Git Worktree, Squash Merge & Release Kapısı motoru
-│   └── olaf-worktree.sh            # Linux & macOS: İzole Git Worktree motoru (Bash)
+│   ├── olaf-worktree.sh            # Linux & macOS: İzole Git Worktree motoru (Bash)
+│   ├── demo-hook-test.ps1          # Windows: Pre-commit lint koruma ve Ghost modu canlı doğrulama testi
+│   └── demo-hook-test.sh           # Linux & macOS: Pre-commit lint koruma canlı doğrulama testi
 ├── .gitignore                      # Git yoksayma kuralları
 └── README.md                       # Çok detaylı Türkçe Kullanım ve Senkronizasyon Kılavuzu
 ```

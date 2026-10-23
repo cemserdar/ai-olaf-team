@@ -99,6 +99,19 @@ $projectName = Split-Path -Leaf $targetDir
 Write-Host "$cGreen✓ Hedef Proje Dizini:$cReset  $targetDir"
 Write-Host "$cGreen✓ Hedef Proje Adı:$cReset     $projectName"
 
+# Git deposu ve commit edilmemiş dosya kontrolü
+$isGitRepo = (git rev-parse --is-inside-work-tree 2>$null) -eq "true"
+if ($isGitRepo) {
+    $dirtyFiles = git status --porcelain 2>$null
+    if ($dirtyFiles) {
+        Write-Host "`n$cBold$cYellow⚠️  UYARI: Projenizde henüz commit edilmemiş değişiklikler var!$cReset"
+        Write-Host "$cYellow   Olaf entegrasyonu öncesinde mevcut kodlarınızı commit etmeniz veya stash yapmanız önerilir.$cReset"
+        Write-Host "$cYellow   (Entegrasyon devam ediyor, ancak Olaf dosyaları ile kendi değişikliklerinizi ayırmaya dikkat edin)$cReset`n"
+    } else {
+        Write-Host "$cGreen✓ Git Durumu:$cReset Temiz çalışma alanı (Tüm mevcut kodlar commit edilmiş)"
+    }
+}
+
 # 2. .olaf DİZİN YAPISINI OLUŞTUR
 Write-Host "`n$cBlue📂 .olaf Hafıza ve Yetenek Dizinleri Oluşturuluyor...$cReset"
 $olafDir = Join-Path $targetDir ".olaf"

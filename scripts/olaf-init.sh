@@ -53,6 +53,25 @@ PROJECT_NAME="$(basename "$TARGET_DIR")"
 echo -e "${COLOR_GREEN}✓ Hedef Proje Dizini:${COLOR_RESET}  $TARGET_DIR"
 echo -e "${COLOR_GREEN}✓ Hedef Proje Adı:${COLOR_RESET}     $PROJECT_NAME"
 
+# Git deposu ve commit edilmemiş dosya kontrolü
+if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
+    UNCOMMITTED=$(git status --porcelain 2>/dev/null || true)
+    if [ -n "$UNCOMMITTED" ]; then
+        echo -e "\n${COLOR_BOLD}${COLOR_YELLOW}⚠️  UYARI: Projenizde henüz commit edilmemiş değişiklikler var!${COLOR_RESET}"
+        echo -e "${COLOR_YELLOW}   Olaf entegrasyonu öncesinde mevcut işlerinizi commit etmeniz veya stash yapmanız önerilir:${COLOR_RESET}"
+        echo "$UNCOMMITTED" | head -n 5 | while read -r line; do
+            echo "     $line"
+        done
+        TOTAL_DIRTY=$(echo "$UNCOMMITTED" | wc -l)
+        if [ "$TOTAL_DIRTY" -gt 5 ]; then
+            echo "     ... ve diğer dosyalar ($TOTAL_DIRTY dosya)"
+        fi
+        echo -e "${COLOR_YELLOW}   (Entegrasyon devam ediyor, ancak Olaf dosyaları ile kendi değişikliklerinizi ayırmaya dikkat edin)${COLOR_RESET}\n"
+    else
+        echo -e "${COLOR_GREEN}✓ Git Durumu:${COLOR_RESET} Temiz çalışma alanı (Tüm mevcut kodlar commit edilmiş)"
+    fi
+fi
+
 # 2. .olaf DİZİN YAPISINI OLUŞTUR
 echo -e "\n${COLOR_BLUE}📂 .olaf Hafıza ve Yetenek Dizinleri Oluşturuluyor...${COLOR_RESET}"
 mkdir -p "$TARGET_DIR/.olaf/base-agents"
