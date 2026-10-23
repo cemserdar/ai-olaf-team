@@ -7,7 +7,9 @@
 
 ---
 
-## 🎯 1. PROJEYE ÖZEL KEŞFEDİLEN MİMARİ VE TEKNOLOJİ BAĞLAMI
+## KEY: architecture
+### 🎯 1. PROJEYE ÖZEL KEŞFEDİLEN MİMARİ VE TEKNOLOJİ BAĞLAMI
+<!-- updated: {{LAST_UPDATED}} -->
 Bu bölümde, ajanın bu spesifik projede yaptığı analizler sonucunda keşfettiği temel mimari kararlar yer alır:
 
 - **Mimari Tip:** (Örn: Clean Architecture, Vertical Slice, Modüler Monolit, Mikroservis vb.)
@@ -17,7 +19,9 @@ Bu bölümde, ajanın bu spesifik projede yaptığı analizler sonucunda keşfet
 
 ---
 
-## 📐 2. KESİN KODLAMA VE TASARIM STANDARTLARI (ENFORCED CONVENTIONS)
+## KEY: conventions
+### 📐 2. KESİN KODLAMA VE TASARIM STANDARTLARI (ENFORCED CONVENTIONS)
+<!-- updated: {{LAST_UPDATED}} -->
 Bu projenin kaynak kodlarında tespit edilen ve yazılacak her yeni kodda zorunlu uyulacak pratikler:
 
 - **İsimlendirme Kuralları (Naming Conventions):**
@@ -31,7 +35,9 @@ Bu projenin kaynak kodlarında tespit edilen ve yazılacak her yeni kodda zorunl
 
 ---
 
-## 🗄️ 3. İLİŞKİLİ VERİ, MODELLER VE BİLEŞENLER
+## KEY: models
+### 🗄️ 3. İLİŞKİLİ VERİ, MODELLER VE BİLEŞENLER
+<!-- updated: {{LAST_UPDATED}} -->
 Ajanın görev alanına giren proje bileşenleri ve bağımlılık haritası:
 
 - **Sorumlu Olduğu Entity / Modeller:**
@@ -41,7 +47,9 @@ Ajanın görev alanına giren proje bileşenleri ve bağımlılık haritası:
 
 ---
 
-## 🚫 4. ASLA YAPILMAYACAKLAR (PROJECT-SPECIFIC ANTI-PATTERNS)
+## KEY: anti-patterns
+### 🚫 4. ASLA YAPILMAYACAKLAR (PROJECT-SPECIFIC ANTI-PATTERNS)
+<!-- updated: {{LAST_UPDATED}} -->
 Bu projede kesinlikle ihlal edilmemesi gereken kural dışı durumlar:
 
 - [ ] Projede belirlenen kütüphane dışına çıkma (Örn: EF Core varken Dapper ekleme).
@@ -52,18 +60,13 @@ Bu projede kesinlikle ihlal edilmemesi gereken kural dışı durumlar:
 
 ---
 
-## ✅ 5. HER GÖREVDE ZORUNLU YAPILACAKLAR (CHECKLIST)
+## KEY: checklist
+### ✅ 5. HER GÖREVDE ZORUNLU YAPILACAKLAR (CHECKLIST)
+<!-- updated: {{LAST_UPDATED}} -->
 Her kod üretiminde veya düzenlemesinde kontrol edilecek maddeler:
 
 - [ ] `.olaf/memory/project-brain.md` güncel durumunu oku.
 - [ ] Mevcut kod desenlerine (design patterns) %100 sadık kal.
 - [ ] Yazılan her metot için parametre ve sınır değer kontrollerini yap.
-- [ ] Görev tamamlandığında bu dosyadaki öğrenilmiş kuralları güncelle.
-- [ ] `@pm` ve ilgili diğer ajanlara durum özeti geç.
-
----
-
-## 📝 6. ÖĞRENME GÜNLÜĞÜ (LEARNING CHANGELOG)
-Ajanın proje geliştikçe hafızasına eklediği kritik dersler:
-
-- **[Tarih - Görev/Commit]:** Öğrenilen yeni kural, eklenen yeni pattern veya düzeltilen anti-pattern detayı.
+- [ ] Hata fırlatmak yerine mimaride belirlenen Result yapısını kullan.
+- [ ] Görev bitiminde bu dosyaya keşfedilen yeni dersleri ekle.

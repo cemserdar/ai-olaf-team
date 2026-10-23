@@ -8,7 +8,9 @@
 
 ---
 
-## 📌 1. PROJE KİMLİĞİ VE HEDEFİ
+## KEY: overview
+### 📌 1. PROJE KİMLİĞİ VE HEDEFİ
+<!-- updated: {{LAST_UPDATED}} -->
 - **Proje Amacı:** {{PROJECT_GOAL}}
 - **Hedef Kitle / Kullanıcı Profili:** {{TARGET_AUDIENCE}}
 - **Temel Fonksiyonel Yetenekler:**
@@ -17,7 +19,9 @@
 
 ---
 
-## 💻 2. TEKNOLOJİ YIĞINI (TECH STACK)
+## KEY: tech-stack
+### 💻 2. TEKNOLOJİ YIĞINI (TECH STACK)
+<!-- updated: 2026-10-15 -->
 | Katman / Alan | Teknoloji & Kütüphaneler | Sürüm | Açıklama |
 | :--- | :--- | :--- | :--- |
 | **Backend Çalışma Zamanı** | {{BACKEND_RUNTIME}} | | Örn: .NET 8 / Java 21 / Node.js 20 |
@@ -32,7 +36,9 @@
 
 ---
 
-## 🏛️ 3. MİMARİ YAPI VE KLASÖR DÜZENİ
+## KEY: architecture
+### 🏛️ 3. MİMARİ YAPI VE KLASÖR DÜZENİ
+<!-- updated: {{LAST_UPDATED}} -->
 Projenin benimsediği mimari yaklaşım (Clean Architecture, Vertical Slice, Modüler vb.):
 
 ```text
@@ -47,7 +53,9 @@ Projenin benimsediği mimari yaklaşım (Clean Architecture, Vertical Slice, Mod
 
 ---
 
-## 🗄️ 4. VERİTABANI VE VERİ MODELLERİ
+## KEY: database
+### 🗄️ 4. VERİTABANI VE VERİ MODELLERİ
+<!-- updated: {{LAST_UPDATED}} -->
 - **Veritabanı Türü:** {{DB_ENGINE}}
 - **Migration Yönetimi:** {{MIGRATION_TOOL}}
 - **Mevcut Temel Varlıklar (Entities):**
@@ -56,7 +64,9 @@ Projenin benimsediği mimari yaklaşım (Clean Architecture, Vertical Slice, Mod
 
 ---
 
-## 🔌 5. API STANDARTLARI VE İLETİŞİM
+## KEY: api
+### 🔌 5. API STANDARTLARI VE İLETİŞİM
+<!-- updated: {{LAST_UPDATED}} -->
 - **API Türü:** RESTful / JSON / WebSockets / gRPC
 - **Standart Yanıt Formatı:**
 ```json
@@ -71,21 +81,27 @@ Projenin benimsediği mimari yaklaşım (Clean Architecture, Vertical Slice, Mod
 
 ---
 
-## 🔐 6. GÜVENLİK VE YETKİLENDİRME KURALLARI
+## KEY: security
+### 🔐 6. GÜVENLİK VE YETKİLENDİRME KURALLARI
+<!-- updated: {{LAST_UPDATED}} -->
 - Kimlik Doğrulama: `Authorization: Bearer <JWT>`
 - Rol ve Politika Dağılımı: 
 - Hassas Veri Koruması: Parolalar, API anahtarları asla koda gömülmez; Environment Variables veya Secret Store kullanılır.
 
 ---
 
-## 📦 7. DEVOPS VE CI/CD YAPILANDIRMASI
+## KEY: devops
+### 📦 7. DEVOPS VE CI/CD YAPILANDIRMASI
+<!-- updated: {{LAST_UPDATED}} -->
 - **Konteyner Desteği:** Dockerfile & docker-compose.yml
 - **Pipeline:** `.github/workflows/` (Build, Test, Lint, Deploy)
 - **Ortamlar:** Development, Staging, Production
 
 ---
 
-## 🔄 8. GİT GEÇMİŞİ VE SON DEĞİŞİKLİKLER
+## KEY: git-history
+### 🔄 8. GİT GEÇMİŞİ VE SON DEĞİŞİKLİKLER
+<!-- updated: {{LAST_UPDATED}} -->
 Bu bölüm her commit sonrasında post-commit hook veya sync-skills tarafından otomatik güncellenir:
 
 - **Son Commit ID:** {{LAST_COMMIT_HASH}}
@@ -94,7 +110,9 @@ Bu bölüm her commit sonrasında post-commit hook veya sync-skills tarafından 
 
 ---
 
-## 🤝 9. TAKIM ANLAŞMASI VE ÇALIŞMA KURALLARI
+## KEY: team-agreement
+### 🤝 9. TAKIM ANLAŞMASI VE ÇALIŞMA KURALLARI
+<!-- updated: {{LAST_UPDATED}} -->
 1. Kod yazmadan önce ilgili ajanın `.olaf/learned-skills/<agent>-skills.md` dosyası incelenir.
 2. Yeni bir kütüphane eklenecekse önce `@architect` ve `@legal` onayı gerekir.
 3. Görev bitiminde mutlaka testler (`@qa`) ve güvenlik taraması (`@security`) yapılır.

@@ -8,7 +8,9 @@
 
 ---
 
-## 🎯 1. GÖREV TANIMI VE KABUL KRİTERLERİ (ACCEPTANCE CRITERIA)
+## KEY: acceptance
+### 🎯 1. GÖREV TANIMI VE KABUL KRİTERLERİ (ACCEPTANCE CRITERIA)
+<!-- updated: {{CREATED_AT}} -->
 
 ### Görev Amacı
 {{TASK_GOAL}}
@@ -20,7 +22,9 @@
 
 ---
 
-## 📂 2. DOSYA KAPSAMI (FILE SCOPE DISCIPLINE)
+## KEY: scope
+### 📂 2. DOSYA KAPSAMI (FILE SCOPE DISCIPLINE)
+<!-- updated: {{CREATED_AT}} -->
 
 > **KESİN KURAL:** Ajan yalnızca bu listede belirtilen dosyaları okuyabilir ve değiştirebilir. Kapsam dışındaki hiçbir dosya açılmamalı, taranmamalı veya değiştirilmemelidir. Başka bir dosyaya ihtiyaç duyulursa `@pm`'e bildirilerek brief güncellenmelidir.
 
@@ -39,7 +43,9 @@
 
 ---
 
-## 🔗 3. BAĞIMLILIKLAR VE ÖNCEL İŞ ÇIKTILARI (PREDECESSOR OUTPUTS)
+## KEY: dependencies
+### 🔗 3. BAĞIMLILIKLAR VE ÖNCEL İŞ ÇIKTILARI (PREDECESSOR OUTPUTS)
+<!-- updated: {{CREATED_AT}} -->
 
 Bu görevin başlaması için tamamlanmış olması gereken ön koşul görevlerin çıktı özetleri:
 
@@ -51,7 +57,9 @@ Bu görevin başlaması için tamamlanmış olması gereken ön koşul görevler
 
 ---
 
-## 🧬 4. AJANIN KULLANACAĞI HAFIZA VE KURALLAR
+## KEY: dna-skills
+### 🧬 4. AJANIN KULLANACAĞI HAFIZA VE KURALLAR
+<!-- updated: {{CREATED_AT}} -->
 
 Bu görev sırasında geçerli olan DNA ve proje yetenekleri:
 1. `base-agents/{{AGENT_DNA_FILE}}`
@@ -59,18 +67,21 @@ Bu görev sırasında geçerli olan DNA ve proje yetenekleri:
 
 ---
 
-## ⚠️ 5. BU GÖREVE ÖZEL DİKKAT EDİLECEK ANTİ-PATTERNLER
+## KEY: anti-patterns
+### ⚠️ 5. BU GÖREVE ÖZEL DİKKAT EDİLECEK ANTİ-PATTERNLER
+<!-- updated: {{CREATED_AT}} -->
 
 - ❌ {{ANTI_PATTERN_1}}
 - ❌ {{ANTI_PATTERN_2}}
 
 ---
 
-## 📦 6. TESLİMAT VE ÇIKTI TALİMATI
+## KEY: output
+### 📦 6. TESLİMAT VE ÇIKTI TALİMATI
+<!-- updated: {{CREATED_AT}} -->
 
 Görev tamamlandığında:
-1. Yalnızca kapsamındaki dosyaları değiştirmiş olduğunu doğrula.
-2. `.olaf/outputs/{{TASK_ID}}-output.md` dosyasına standart manifesti yaz.
-3. `.olaf/learned-skills/{{AGENT_SKILL_FILE}}` dosyasını yeni öğrenilen kurallarla güncelle.
-4. `@pm`'e tek cümlelik başarı özeti bildir.
-
+1. Değiştirilen dosyaları doğrula.
+2. `.olaf/outputs/{{TASK_ID}}-output.md` dosyasını `templates/task-output-template.md` şablonuna göre eksiksiz doldur.
+3. Kendi yetenek dosyanı (`.olaf/learned-skills/{{AGENT_SKILL_FILE}}`) güncelle.
+4. `@pm`'e işin tamamlandığını bildir ve teslim et.

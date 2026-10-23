@@ -7,16 +7,18 @@
 
 ---
 
-## 🎯 1. SPRINT HEDEFİ
+## KEY: sprint-goal
+### 🎯 1. SPRINT HEDEFİ
 {{SPRINT_GOAL}}
 
 ---
 
-## 📋 2. GÖREV DAĞILIMI VE AJAN ATAMALARI
+## KEY: task-board
+### 📋 2. GÖREV DAĞILIMI VE AJAN ATAMALARI
 Aşağıdaki tablo, görevlerin bağımlılıklarını ve 15 ajanın birbirini bloklamayan işlerinin paralel yürütüldüğü kulvarları belirler:
 
 | Kulvar / Faz | Görev ID | Görev Açıklaması | Sorumlu Ajan(lar) | Bağımlılık | Yürütme Modu | Durum | Çıktı Dosyaları / Etkilenen Kodlar |
-| :--- | :--- | :--- | :--- | :--- | :---: | :---: | :--- |
+| :--- | :--- | :--- | :--- | :--- | :--- | :---: | :--- |
 | **Faz 1: Analiz & Tasarım** | `TASK-01` | Gereksinim ve Kabul Kriterleri Analizi | `@ba` | - | ⚡ Paralel 1 | ⏳ Bekliyor | `docs/requirements.md` |
 | **Faz 1: Analiz & Tasarım** | `TASK-02` | Mimari Tasarım ve API/DTO Sözleşmesi | `@architect` | TASK-01 | Sıralı | ⏳ Bekliyor | Mimari şema, DTO modelleri |
 | **Faz 1: Analiz & Tasarım** | `TASK-03` | UI/UX Wireframe ve Tasarım Sistemi | `@uiux` | TASK-01 | ⚡ Paralel 1 | ⏳ Bekliyor | Renk paleti, bileşen rehberi |
@@ -35,7 +37,8 @@ Aşağıdaki tablo, görevlerin bağımlılıklarını ve 15 ajanın birbirini b
 
 ---
 
-## 💬 3. AJANLAR ARASI İLETİŞİM VE ONAY NOTLARI
+## KEY: communication-notes
+### 💬 3. AJANLAR ARASI İLETİŞİM VE ONAY NOTLARI
 - **`@pm` Notu:** 
 - **`@architect` Notu:** 
 - **`@security` Onayı:** 
@@ -43,7 +46,8 @@ Aşağıdaki tablo, görevlerin bağımlılıklarını ve 15 ajanın birbirini b
 
 ---
 
-## 🔄 4. HAFIZA GÜNCELLEME KONTROL LİSTESİ (SPRINT SONU)
+## KEY: memory-checklist
+### 🔄 4. HAFIZA GÜNCELLEME KONTROL LİSTESİ (SPRINT SONU)
 Bu sprint tamamlanmadan önce her ajanın kendi skill dosyasını güncellemesi zorunludur:
 - [ ] `@backend` -> `.olaf/learned-skills/backend-skills.md` güncellendi mi?
 - [ ] `@db` -> `.olaf/learned-skills/db-skills.md` güncellendi mi?
