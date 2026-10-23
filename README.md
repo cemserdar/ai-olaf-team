@@ -420,6 +420,59 @@ $$\text{Deterministik Sonuç} = f(\text{Context Brief}, \text{Snapshot Hash}, \t
 
 ---
 
+## 🧠 12. SEÇİCİ HAFIZA VE İSTEĞE BAĞLI GETİRME (SELECTIVE MEMORY RETRIEVAL — ADR-11 İLA ADR-14)
+
+Her agent çağrısında tüm hafıza dosyalarını (`project-brain.md`, `active-sprint.md`, `<agent>-skills.md`) baştan sona yüklemek yerine, **yalnızca görevle ilgili bölümler on-demand getirilir**. Bu sayede context token tüketimi **%70 - %88** oranında azaltılır, bayat veri riski önlenir ve context kirliliği sıfırlanır.
+
+### 📊 Token Tüketimi Karşılaştırması:
+| Senaryo | Eski Davranış (Tam Yükleme) | Yeni Davranış (Seçici Getirme) | Tasarruf |
+| :--- | :--- | :--- | :--- |
+| **Dar Görev (Tek Task)** | ~5.000 token | ~600 token | **~88%** |
+| **Orta Görev (Mimari Karar)** | ~6.000 token | ~1.200 token | **~80%** |
+| **Geniş Görev (Sprint İnceleme)** | ~8.000 token | ~2.500 token | **~69%** |
+
+### 🛠️ Seçici Hafıza Motoru Komutları (`scripts/olaf-query-memory`):
+```powershell
+# Windows PowerShell:
+# 1. Yalnızca teknoloji yığınını çek:
+.\scripts\olaf-query-memory.ps1 -File brain -Section tech-stack
+
+# 2. Sprint tahtasından tek bir görevi çek:
+.\scripts\olaf-query-memory.ps1 -File sprint -Task TASK-07
+
+# 3. Belirli bir ajanın kodlama standartlarını çek:
+.\scripts\olaf-query-memory.ps1 -File skills -Agent backend -Section conventions
+
+# 4. Güncellik uyarısı (7 günden eski kararları uyar):
+.\scripts\olaf-query-memory.ps1 -File brain -Section tech-stack -MaxAgeDays 7
+
+# 5. Geriye dönük uyumluluk (tam dosya yükleme):
+.\scripts\olaf-query-memory.ps1 -File brain -Full
+
+# Linux & macOS (Bash):
+./scripts/olaf-query-memory.sh -f brain -s tech-stack
+./scripts/olaf-query-memory.sh -f sprint -t TASK-07
+./scripts/olaf-query-memory.sh -f skills -a backend -s conventions
+./scripts/olaf-query-memory.sh -f brain -s tech-stack --max-age 7
+./scripts/olaf-query-memory.sh -f brain --full
+```
+
+### 🧪 Doğrulama ve Güvenlik Test Paketi (`scripts/olaf-memory-test`):
+```powershell
+# Windows PowerShell:
+.\scripts\olaf-memory-test.ps1
+
+# Linux & macOS (Bash):
+./scripts/olaf-memory-test.sh
+```
+- **Test A:** Token & satır tasarrufu (seçici çıktı $\le \%30$)
+- **Test B:** Bölüm izolasyonu (`tech-stack` çekildiğinde `architecture` sızmaz)
+- **Test C:** Güncellik uyarısı (`--max-age` eski kayıtlarda `⚠️ UYARI` verir)
+- **Test D:** Sınır dışı güvenlik (Path Traversal `../../etc/passwd` derhal engellenir)
+- **Test E:** Geriye dönük uyumluluk (`--full` tam dosya bütünlüğünü korur)
+
+---
+
 <p align="center">
   <b>AI Olaf Team</b> ile projelerinizde hız, kalite ve kurumsal mimari disiplini her an yanınızda! 🎯
 </p>
