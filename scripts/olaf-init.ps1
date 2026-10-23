@@ -385,7 +385,7 @@ $agentWorkflowsDir2 = Join-Path $targetDir ".agents\workflows"
 New-Item -ItemType Directory -Force -Path $agentWorkflowsDir1 | Out-Null
 New-Item -ItemType Directory -Force -Path $agentWorkflowsDir2 | Out-Null
 
-$workflowsToCopy = @("olaf-train.md", "pm.md", "sync-skills.md", "review-all.md")
+$workflowsToCopy = @("olaf-train.md", "pm.md", "sync-skills.md", "review-all.md", "orchestrate-parallel.md")
 foreach ($wf in $workflowsToCopy) {
     $srcWf = Join-Path $olafCentralDir "workflows\$wf"
     if (Test-Path -LiteralPath $srcWf) {
@@ -393,6 +393,14 @@ foreach ($wf in $workflowsToCopy) {
         Copy-Item -LiteralPath $srcWf -Destination (Join-Path $agentWorkflowsDir2 $wf) -Force
     }
 }
+
+# Worktree ve Entegrasyon Betiklerini Kopyala
+$olafScriptsDir = Join-Path $targetDir ".olaf\scripts"
+New-Item -ItemType Directory -Force -Path $olafScriptsDir | Out-Null
+$wtPs1 = Join-Path $olafCentralDir "scripts\olaf-worktree.ps1"
+$wtSh = Join-Path $olafCentralDir "scripts\olaf-worktree.sh"
+if (Test-Path -LiteralPath $wtPs1) { Copy-Item -LiteralPath $wtPs1 -Destination (Join-Path $olafScriptsDir "olaf-worktree.ps1") -Force }
+if (Test-Path -LiteralPath $wtSh) { Copy-Item -LiteralPath $wtSh -Destination (Join-Path $olafScriptsDir "olaf-worktree.sh") -Force }
 
 # 8. ÇOKLU IDE MASTER KURAL KÖPRÜLERİNİ OLUŞTUR
 Write-Host "$cBlue📜 Çoklu IDE Kural Köprüleri (GEMINI.md, AGENTS.md, .cursorrules vb.) Oluşturuluyor...$cReset"
@@ -438,6 +446,13 @@ Kullanıcı `@etiket` kullandığında veya `@pm` bir alt ajana görev devretti�
 Projede kod yazıldığında, bir bug çözüldüğünde veya yeni bir model eklendiğinde:
 - Görevi tamamlayan ajan, görevi bitirmeden önce `.olaf/learned-skills/<agent>-skills.md` dosyasını günceller.
 - `@pm` ise `.olaf/memory/project-brain.md` ve `.olaf/memory/active-sprint.md` dosyalarını günceller.
+
+---
+
+## ⚡ PARALEL İCRA VE BAĞIMSIZ KULVARLAR PROTOKOLÜ (PARALLEL EXECUTION)
+1. **Birbirini Bloklamayan İşler Paralel Yapılır:** Eğer iş paketleri arasında doğrudan teknik bir blokaj yoksa (örneğin backend servis geliştirme ile mobil ekran/state geliştirme gibi), bu işler ardışık olarak bekletilmez; **paralel kulvarlarda (parallel tracks)** eş zamanlı yürütülür.
+2. **Yalnızca Bloklayıcı Bağımlılıklar Sıralı Bekler:** Bir ajan yalnızca kendisini teknik olarak bloklayan ön koşul görev tamamlanmadığında bekler (Örn: `@db` şema ve migration'ı bitirmeden `@backend` veritabanı sorgusu yazamaz; API/DTO sözleşmesi netleşmeden nihai mobil entegrasyon tamamlanamaz). Ortak veri/API sözleşmesi belirlendiği andan itibaren backend, mobil, web ve altyapı işleri paralel ilerler.
+3. **Çok Kulvarlı Koordinasyon:** `@pm` işleri analiz ederken bağımsız iş paketlerini tespit eder ve eş zamanlı yürütülecek kulvarlara (`Track 1: Backend/DB`, `Track 2: Mobil`, `Track 3: Web`, `Track 4: DevOps`, `Track 5: Legal`, `Track 6: QA/Docs` vb.) dağıtır.
 
 ---
 

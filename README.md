@@ -193,14 +193,14 @@ Antigravity veya VS Code sohbetinde şunu yazın:
 ```text
 /pm .NET 8 Web API ve React TypeScript kullanarak çok kiracılı (multi-tenant) bir fatura takip sistemi kurmak istiyorum. Mimariyi Clean Architecture olarak planla.
 ```
-**Orkestrasyon Nasıl İşler?**
-1. `@pm` görevi alır ve `.olaf/memory/active-sprint.md` tahtasına yazar.
-2. `@ba` iş kurallarını ve kabul kriterlerini belirler.
-3. `@architect` Clean Architecture katmanlarını ve klasör ağacını çıkarır.
-4. `@db` PostgreSQL şemasını ve Entity modellerini oluşturur.
-5. `@backend` servisleri ve endpoint'leri yazar.
-6. `@frontend` ve `@uiux` arayüz bileşenlerini inşa eder.
-7. Kod yazıldıkça her ajan kendi `learned-skills` dosyasını adım adım doldurur.
+**Orkestrasyon ve Paralel İcra Nasıl İşler?**
+1. `@pm` görevi alır ve `.olaf/memory/active-sprint.md` tahtasına iş paketlerini yazar.
+2. `@ba` iş kurallarını, `@architect` ise ortak veri modelleri ve API/DTO sözleşmesini netleştirir.
+3. **⚡ Paralel Kulvarlar (Birbirini Bloklamayan İşler Eş Zamanlı Yürütülür):**
+   - **Kulvar A (Backend & DB):** `@db` migration ve entity'leri hazırlar, `@backend` servis ve endpoint kodlarını yazar.
+   - **Kulvar B (Mobil & Frontend):** `@mobile` ve `@frontend` UI bileşenlerini, state yönetimini ve istemci katmanını backend'i beklemeden eş zamanlı inşa eder.
+4. **Konsolidasyon:** Ortak uçlar bağlandıktan sonra `@security` güvenlik taramasını, `@qa` testlerini, `@refactor` temizliğini yapar ve `@pm` sprinti kapatır.
+5. Kod yazıldıkça her ajan kendi `learned-skills` dosyasını adım adım doldurur.
 
 ---
 
@@ -214,6 +214,7 @@ Antigravity IDE ve VS Code içinde doğrudan kullanabileceğiniz hazır slash ko
 | **`/pm [görev]`** | Verilen görevi analiz eder, parçalara böler ve doğru sırayla uzman ajanları çalıştırır. | `@pm` (ve atanan alt ajanlar) |
 | **`/sync-skills`** | Git diff ve dosya değişikliklerini tarayarak ajanların hafıza dosyalarını günceller. | Değişiklikten etkilenen tüm ajanlar |
 | **`/review-all`** | Projeyi Mimari, Güvenlik, Performans, Test ve Hukuk açısından denetler, birleşik rapor sunar. | `@architect`, `@security`, `@refactor`, `@qa`, `@legal` |
+| **`/orchestrate-parallel`** | Bağımsız işleri izole Git Worktree alanlarında paralel çalıştırır, `@devops` ile test kapısından geçirip Squash Merge eder. | `@pm`, `@devops`, `@architect` ve atanan paralel ajanlar |
 
 ---
 

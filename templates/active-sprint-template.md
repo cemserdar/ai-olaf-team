@@ -13,23 +13,25 @@
 ---
 
 ## 📋 2. GÖREV DAĞILIMI VE AJAN ATAMALARI
-Aşağıdaki tablo, görevlerin icra sırasını ve hangi ajanın sorumlu olduğunu belirler:
+Aşağıdaki tablo, görevlerin bağımlılıklarını ve 15 ajanın birbirini bloklamayan işlerinin paralel yürütüldüğü kulvarları belirler:
 
-| Sıra | Görev ID | Görev Açıklaması | Sorumlu Ajan(lar) | Bağımlılık | Durum | Çıktı Dosyaları / Etkilenen Kodlar |
-| :---: | :--- | :--- | :--- | :--- | :---: | :--- |
-| 1 | `TASK-01` | Gereksinim ve Kullanıcı Hikayesi Analizi | `@ba` | - | ⏳ Bekliyor | `docs/requirements.md` |
-| 2 | `TASK-02` | Mimari Tasarım ve Katman Planı | `@architect` | TASK-01 | ⏳ Bekliyor | Mimari şema, DTO modelleri |
-| 3 | `TASK-03` | Veritabanı Entity ve Migration Hazırlığı | `@db` | TASK-02 | ⏳ Bekliyor | `Entities/`, `Migrations/` |
-| 4 | `TASK-04` | Backend Servis ve Endpoint Geliştirme | `@backend` | TASK-03 | ⏳ Bekliyor | `Services/`, `Controllers/` |
-| 5 | `TASK-05` | Gerçek Zamanlı Akış / Mesajlaşma | `@realtime` | TASK-04 | ⏳ Bekliyor | `Hubs/`, `Consumers/` |
-| 6 | `TASK-06` | Web Frontend Ekran Geliştirme | `@frontend`, `@uiux` | TASK-04 | ⏳ Bekliyor | `src/pages/`, `src/components/` |
-| 7 | `TASK-07` | Mobil Arayüz Entegrasyonu | `@mobile` | TASK-04 | ⏳ Bekliyor | `screens/`, `hooks/` |
-| 8 | `TASK-08` | Güvenlik, Auth ve Yetki Denetimi | `@security` | TASK-04, 06 | ⏳ Bekliyor | Güvenlik raporu, fixler |
-| 9 | `TASK-09` | Birim ve Entegrasyon Testleri | `@qa` | TASK-04, 06 | ⏳ Bekliyor | `tests/` |
-| 10 | `TASK-10` | Kod Temizliği ve Refactoring | `@refactor` | TASK-09 | ⏳ Bekliyor | Temizlenen sınıflar |
-| 11 | `TASK-11` | Lisans ve KVKK/GDPR Uyumluluk | `@legal` | TASK-02, 04 | ⏳ Bekliyor | Uyumluluk notu |
-| 12 | `TASK-12` | API Dokümantasyonu ve README | `@docs` | TASK-10 | ⏳ Bekliyor | `README.md`, Swagger |
-| 13 | `TASK-13` | Docker & CI/CD Pipeline Güncellemesi | `@devops` | TASK-10 | ⏳ Bekliyor | `Dockerfile`, `.github/` |
+| Kulvar / Faz | Görev ID | Görev Açıklaması | Sorumlu Ajan(lar) | Bağımlılık | Yürütme Modu | Durum | Çıktı Dosyaları / Etkilenen Kodlar |
+| :--- | :--- | :--- | :--- | :--- | :---: | :---: | :--- |
+| **Faz 1: Analiz & Tasarım** | `TASK-01` | Gereksinim ve Kabul Kriterleri Analizi | `@ba` | - | ⚡ Paralel 1 | ⏳ Bekliyor | `docs/requirements.md` |
+| **Faz 1: Analiz & Tasarım** | `TASK-02` | Mimari Tasarım ve API/DTO Sözleşmesi | `@architect` | TASK-01 | Sıralı | ⏳ Bekliyor | Mimari şema, DTO modelleri |
+| **Faz 1: Analiz & Tasarım** | `TASK-03` | UI/UX Wireframe ve Tasarım Sistemi | `@uiux` | TASK-01 | ⚡ Paralel 1 | ⏳ Bekliyor | Renk paleti, bileşen rehberi |
+| **Kulvar A (Backend & DB)** | `TASK-04` | Veritabanı Entity ve Migration Hazırlığı | `@db` | TASK-02 | ⚡ Paralel A | ⏳ Bekliyor | `Entities/`, `Migrations/` |
+| **Kulvar A (Backend & DB)** | `TASK-05` | Backend Servis ve Endpoint Geliştirme | `@backend` | TASK-04 | ⚡ Paralel A | ⏳ Bekliyor | `Services/`, `Controllers/` |
+| **Kulvar A (Backend & DB)** | `TASK-06` | Gerçek Zamanlı Akış / Mesaj Kuyrukları | `@realtime` | TASK-02 | ⚡ Paralel A | ⏳ Bekliyor | `Hubs/`, `Consumers/` |
+| **Kulvar B (Mobil)** | `TASK-07` | Mobil Arayüz ve Ekran Geliştirme | `@mobile` | TASK-02 | ⚡ Paralel B | ⏳ Bekliyor | `screens/`, `hooks/` |
+| **Kulvar C (Web Frontend)** | `TASK-08` | Web Frontend Ekran Geliştirme | `@frontend` | TASK-02, 03 | ⚡ Paralel C | ⏳ Bekliyor | `src/pages/`, `src/components/` |
+| **Kulvar D (DevOps & Ortam)**| `TASK-09` | Dockerfile, CI/CD Pipeline ve Nginx | `@devops` | TASK-02 | ⚡ Paralel D | ⏳ Bekliyor | `Dockerfile`, `.github/` |
+| **Kulvar E (Hukuk & Uyum)**  | `TASK-10` | Lisans, Paket ve KVKK/GDPR Denetimi | `@legal` | TASK-02 | ⚡ Paralel E | ⏳ Bekliyor | Hukuki uyumluluk raporu |
+| **Kulvar F (QA Hazırlık)**   | `TASK-11` | Test Senaryoları ve Mock Veri Hazırlığı| `@qa` | TASK-01, 02 | ⚡ Paralel F | ⏳ Bekliyor | Test senaryoları, fixtures |
+| **Kulvar G (Dokümantasyon)** | `TASK-12` | API Dokümantasyonu ve README Taslağı | `@docs` | TASK-02 | ⚡ Paralel G | ⏳ Bekliyor | `README.md`, Swagger spec |
+| **Faz 3: Güvenlik & Test**   | `TASK-13` | Güvenlik Taraması, Auth ve Yetki | `@security` | TASK-05, 07 | ⚡ Paralel İnceleme | ⏳ Bekliyor | Güvenlik tarama raporu |
+| **Faz 3: Güvenlik & Test**   | `TASK-14` | Testlerin Canlı Kodda Koşturulması | `@qa` | TASK-05, 07 | ⚡ Paralel İnceleme | ⏳ Bekliyor | `tests/` çalıştırma sonucu |
+| **Faz 3: Kapanış**           | `TASK-15` | Clean Code İncelemesi ve Refactoring | `@refactor` | TASK-13, 14 | Sıralı Kapanış | ⏳ Bekliyor | Temizlenen sınıflar |
 
 ---
 

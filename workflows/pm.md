@@ -26,23 +26,49 @@ Kullanıcıdan gelen yeni özellik, hata düzeltme, mimari değişiklik veya opt
 2. `.olaf/memory/active-sprint.md` dosyasını aç ve sprint tablosunu güncelle:
    - Sprint Hedefini belirle.
    - Görevleri alt iş paketlerine (`TASK-01`, `TASK-02`...) böl.
-   - Her görev için sorumlu ajanı ve çalışma sırasını ata.
+   - **Bağımlılık Analizi Yap:** Birbirini bloklamayan görevleri belirle ve **paralel kulvarlara (Kulvar A: Backend, Kulvar B: Mobil vb.)** ayır.
+   - Yalnızca teknik olarak birbirine bağımlı olan görevlere sıralı önkoşul (blocking dependency) tanımla.
 
-### ADIM 3: AJANLARIN SIRAYLA ÇALIŞTIRILMASI (HANDOVER ZİNCİRİ)
-`@pm` olarak aşağıdaki standart teslim zincirini koordine et:
+### ADIM 3: AJANLARIN İCRASI (15 AJAN İÇİN ÇOK KULVARLI PARALEL İCRA MATRİSİ)
+`@pm` olarak 15 kişilik ekibin tamamını bağımsızlık durumuna göre paralel kulvarlarda koordine et:
 
-1. **İş Analizi (@ba):** Belirsiz gereksinimleri netleştir, kabul kriterlerini ve edge-case senaryolarını yaz.
-2. **Mimari Onay (@architect):** Eklenecek sınıfların, katmanların ve desenlerin mimariye uygunluğunu onayla.
-3. **Veritabanı Hazırlığı (@db):** Varsa Entity, Fluent API konfigürasyonu ve Migration oluştur.
-4. **Backend Geliştirme (@backend):** Servis, DTO, Repository ve Controller/Endpoint kodlarını yaz.
-5. **Gerçek Zamanlı Akış (@realtime):** Gerekliyse Hub, BackgroundService veya Queue consumer kodlarını ekle.
-6. **Frontend / Mobil Geliştirme (@frontend / @mobile / @uiux):** UI bileşenlerini ve API entegrasyonlarını yap.
-7. **Güvenlik Denetimi (@security):** Yazılan kodun auth, input validation ve yetki kontrollerini sına.
-8. **Test Yazımı (@qa):** İlgili fonksiyonlar ve endpoint'ler için birim/entegrasyon testlerini yaz.
-9. **Temizlik ve İnceleme (@refactor):** Kod kokularını ve gereksiz tekrarları temizle.
-10. **Dokümantasyon (@docs):** Swagger, README veya mimari diyagramları güncelle.
-11. **Hukuki / Lisans Denetimi (@legal):** Yeni paket veya kişisel veri eklendiyse denetle.
-12. **DevOps & CI/CD (@devops):** Gerekirse Dockerfile ve pipeline ayarlarını güncelle.
+#### 1. Faz: Hazırlık, Sözleşme & Tasarım (Paralel Analiz)
+Birbirini bloklamayan tasarım ve analiz işleri eş zamanlı başlar:
+- `@ba`: Gereksinimleri, kullanıcı hikayelerini ve kabul kriterlerini netleştirir.
+- `@architect`: Sistem katmanlarını, entity ilişkilerini ve API/DTO kontratlarını çıkarır.
+- `@uiux`: Ekran tasarımlarını, wireframe ve renk paletini hazırlar.
+
+#### 2. Faz: Eş Zamanlı Geliştirme & Altyapı (15 Ajanın Paralel Kulvarları)
+*API/DTO sözleşmesi ve temel mimari netleştiği andan itibaren tüm bağımsız kulvarlar aynı anda çalışır:*
+- **Kulvar 1 (Veritabanı & Backend):** 
+  - `@db`: Entity ve Migration'ları hazırlar.
+  - `@backend`: Servis, Repository ve Endpoint kodlarını yazar.
+  - `@realtime`: SignalR Hub, Redis Pub/Sub veya RabbitMQ altyapısını kurar.
+- **Kulvar 2 (Mobil Geliştirme):** 
+  - `@mobile`: Mobil ekranları, yerel state'i (offline-first) ve API istemci katmanını geliştirir.
+- **Kulvar 3 (Web Frontend):** 
+  - `@frontend`: Web ekranlarını, bileşen kütüphanesini ve state yönetimini geliştirir.
+- **Kulvar 4 (DevOps & CI/CD - Bağımsız):** 
+  - `@devops`: Geliştirmenin bitmesini beklemez; Dockerfile, docker-compose, GitHub Actions pipeline ve ortam konfigürasyonlarını **paralel** inşa eder.
+- **Kulvar 5 (Yasal & Lisans - Bağımsız):** 
+  - `@legal`: Kodun tamamlanmasını beklemez; projeye dahil edilen NuGet/NPM paketlerinin lisanslarını ve KVKK/GDPR uyumunu **paralel** denetler.
+- **Kulvar 6 (QA & Test Hazırlığı - Bağımsız):** 
+  - `@qa`: Kodun yazılmasını beklemez; kabul kriterlerine göre birim/entegrasyon test şablonlarını, fixture'ları ve test senaryolarını **paralel** hazırlar.
+- **Kulvar 7 (Dokümantasyon - Bağımsız):** 
+  - `@docs`: API sözleşmesi netleştiği andan itibaren OpenAPI/Swagger, mimari diyagramlar ve README dokümanlarını **paralel** yazar.
+
+> **GENEL PARALEL İCRA KURALI:** 15 ajanın tamamı için geçerlidir. Birbirini teknik olarak zorunlu kılmayan (bloklamayan) hiçbir iş paketi sıralı bekletilmez; bağımsız kulvarlarda aynı anda yürütülür.
+
+#### 3. Faz: Doğrulama, Kalite, Git Entegrasyonu ve Kapanış
+Kulvarlardaki işler tamamlandığında entegrasyon ve denetim adımları devreye girer:
+- **`@devops` (Tek Yetkili Git & Release Gatekeeper):** 
+  - Paralel kulvarların task branch'lerini Merge Queue sırasına alır.
+  - Ara commit'leri `main` geçmişini kirletmeyecek şekilde **Squash Merge** ile tekil commit'e dönüştürür.
+  - Conflict çıktığında çözümü koordine eder, CI/CD test kapısını çalıştırır ve `main`'e resmi entegrasyonu SADECE `@devops` yapar. Worktree temizliğini tamamlar.
+- **`@security`:** Yetki, auth, SQLi/XSS ve gizli anahtar taramasını paralel yürütür.
+- **`@qa`:** Hazırladığı test senaryolarını canlı kod üzerinde koşturur ve raporlar.
+- **`@refactor`:** Kod kokularını, DRY/SOLID ihlallerini ve bellek optimizasyonunu inceler.
+- **`@pm`:** Tüm kulvarlar tamamlandığında sprinti kapatır ve kullanıcı özetini sunar.
 
 > **ÖNEMLİ KURAL:** Bir ajanı devreye alırken, o ajanın hem `base-agents/<agent>.md` (genel DNA) hem de `.olaf/learned-skills/<agent>-skills.md` (projeye özel kuralları) dosyalarını hafızada birleştir!
 

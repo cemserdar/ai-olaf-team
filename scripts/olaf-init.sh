@@ -270,6 +270,13 @@ cp -f "$OLAF_CENTRAL_DIR/workflows/olaf-train.md" "$TARGET_DIR/.agent/workflows/
 cp -f "$OLAF_CENTRAL_DIR/workflows/pm.md" "$TARGET_DIR/.agent/workflows/pm.md"
 cp -f "$OLAF_CENTRAL_DIR/workflows/sync-skills.md" "$TARGET_DIR/.agent/workflows/sync-skills.md"
 cp -f "$OLAF_CENTRAL_DIR/workflows/review-all.md" "$TARGET_DIR/.agent/workflows/review-all.md"
+cp -f "$OLAF_CENTRAL_DIR/workflows/orchestrate-parallel.md" "$TARGET_DIR/.agent/workflows/orchestrate-parallel.md"
+
+# Worktree ve Entegrasyon Betiklerini Kopyala
+mkdir -p "$TARGET_DIR/.olaf/scripts"
+cp -f "$OLAF_CENTRAL_DIR/scripts/olaf-worktree.sh" "$TARGET_DIR/.olaf/scripts/olaf-worktree.sh"
+cp -f "$OLAF_CENTRAL_DIR/scripts/olaf-worktree.ps1" "$TARGET_DIR/.olaf/scripts/olaf-worktree.ps1"
+chmod +x "$TARGET_DIR/.olaf/scripts/olaf-worktree.sh" 2>/dev/null || true
 
 # 8. ÇOKLU IDE MASTER KURAL KÖPRÜLERİNİ OLUŞTUR
 echo -e "${COLOR_BLUE}📜 Çoklu IDE Kural Köprüleri (GEMINI.md, AGENTS.md, .cursorrules vb.) Oluşturuluyor...${COLOR_RESET}"
@@ -315,6 +322,13 @@ Kullanıcı `@etiket` kullandığında veya `@pm` bir alt ajana görev devretti�
 Projede kod yazıldığında, bir bug çözüldüğünde veya yeni bir model eklendiğinde:
 - Görevi tamamlayan ajan, görevi bitirmeden önce `.olaf/learned-skills/<agent>-skills.md` dosyasını günceller.
 - `@pm` ise `.olaf/memory/project-brain.md` ve `.olaf/memory/active-sprint.md` dosyalarını günceller.
+
+---
+
+## ⚡ PARALEL İCRA VE BAĞIMSIZ KULVARLAR PROTOKOLÜ (PARALLEL EXECUTION)
+1. **Tüm 15 Ajan İçin Geçerlidir - Birbirini Bloklamayan İşler Paralel Yapılır:** Ekipteki 15 ajanın tamamı bağımsızlık durumuna göre paralel çalışır. Yalnızca backend ve mobil değil; geliştirme devam ederken `@devops` (CI/CD, Docker), `@legal` (Lisans ve KVKK), `@docs` (Dokümantasyon) ve `@qa` (Test senaryoları) gibi bağımsız tüm iş paketleri eş zamanlı yürütülür.
+2. **Yalnızca Bloklayıcı Bağımlılıklar Sıralı Bekler:** Bir ajan yalnızca kendisini teknik olarak bloklayan ön koşul görev tamamlanmadığında bekler (Örn: `@db` şema ve migration'ı bitirmeden `@backend` veritabanı sorgusu yazamaz; API/DTO sözleşmesi netleşmeden nihai mobil entegrasyon tamamlanamaz). Ortak veri/API sözleşmesi belirlendiği andan itibaren backend, mobil, web ve altyapı işleri paralel ilerler.
+3. **Çok Kulvarlı Koordinasyon:** `@pm` işleri analiz ederken bağımsız iş paketlerini tespit eder ve eş zamanlı yürütülecek kulvarlara (`Track 1: Backend/DB`, `Track 2: Mobil`, `Track 3: Web`, `Track 4: DevOps`, `Track 5: Legal`, `Track 6: QA/Docs` vb.) dağıtır.
 
 ---
 
