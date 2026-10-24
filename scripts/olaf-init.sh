@@ -299,6 +299,8 @@ cp -f "$OLAF_CENTRAL_DIR/workflows/sync-skills.md" "$TARGET_DIR/.agent/workflows
 cp -f "$OLAF_CENTRAL_DIR/workflows/review-all.md" "$TARGET_DIR/.agent/workflows/review-all.md"
 cp -f "$OLAF_CENTRAL_DIR/workflows/orchestrate-parallel.md" "$TARGET_DIR/.agent/workflows/orchestrate-parallel.md"
 cp -f "$OLAF_CENTRAL_DIR/workflows/context-handover.md" "$TARGET_DIR/.agent/workflows/context-handover.md"
+cp -f "$OLAF_CENTRAL_DIR/workflows/arch-review.md" "$TARGET_DIR/.agent/workflows/arch-review.md" 2>/dev/null || true
+cp -f "$OLAF_CENTRAL_DIR/workflows/arch-review.md" "$TARGET_DIR/.agents/workflows/arch-review.md" 2>/dev/null || true
 
 # Worktree ve Entegrasyon Betiklerini Kopyala
 mkdir -p "$TARGET_DIR/.olaf/scripts"

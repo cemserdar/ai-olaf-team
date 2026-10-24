@@ -413,7 +413,7 @@ $agentWorkflowsDir2 = Join-Path $targetDir ".agents\workflows"
 New-Item -ItemType Directory -Force -Path $agentWorkflowsDir1 | Out-Null
 New-Item -ItemType Directory -Force -Path $agentWorkflowsDir2 | Out-Null
 
-$workflowsToCopy = @("olaf-train.md", "pm.md", "sync-skills.md", "review-all.md", "orchestrate-parallel.md", "context-handover.md")
+$workflowsToCopy = @("olaf-train.md", "pm.md", "sync-skills.md", "review-all.md", "orchestrate-parallel.md", "context-handover.md", "arch-review.md")
 foreach ($wf in $workflowsToCopy) {
     $srcWf = Join-Path $olafCentralDir "workflows\$wf"
     if (Test-Path -LiteralPath $srcWf) {

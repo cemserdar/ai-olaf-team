@@ -473,6 +473,58 @@ Her agent çağrısında tüm hafıza dosyalarını (`project-brain.md`, `active
 
 ---
 
+## 🏛️ 13. PROAKTİF MİMARİ İNCELEME (`/arch-review`)
+
+`@architect` ajanı projenizi pasif bekleme yerine **aktif olarak izler** — hata, yavaşlık ve daha uygun mimari alternatifleri tespit edip size sunar. Ancak **sormadan asla değişiklik yapmaz.**
+
+### 🔎 Nasıl Tetiklenir?
+
+| Yöntem | Açıklama |
+| :--- | :--- |
+| `/arch-review` | Kullanıcı doğrudan tetikler |
+| `/olaf-train` sonrası | Eğitim tamamlanınca otomatik özet analiz |
+| Büyük sprint başlangıcı | `@pm`, ≥3 görevli sprintlerde paralel analiz yaptırır |
+
+### 📊 Bulgu Önceliklendirme Sistemi
+
+| Seviye | Örnekler |
+| :--- | :--- |
+| 🔴 **Kritik** | N+1 sorgu, katman bağımlılık ihlali, hardcoded secret, async deadlock |
+| 🟡 **Uyarı** | Eski kütüphane sürümü, test kapsamı %0, anemic domain model |
+| 🟢 **Öneri** | Cache katmanı, CQRS fırsatı, pagination eksikliği, circuit breaker |
+
+### 🔒 Değişiklik Kapısı (Kesin Kural)
+
+```
+ANALIZ → RAPOR SUNULUR → KULLANICI KARARI
+  ├─ "Onayla"  → @pm sprint'e TASK-XX ekler → Standart akış başlar
+  ├─ "Reddet"  → Raporda arşivlenir, hiçbir şey değişmez
+  └─ "Anlat"   → @architect açıklar, yine hiçbir şey değişmez
+```
+
+`@architect` kullanıcı "Onayla" demeden **tek bir satır bile değiştiremez**.
+
+### 📋 Örnek Rapor Çıktısı
+
+```
+📋 Mimari İnceleme Tamamlandı — MyProject
+
+🔴 Kritik : 2 bulgu
+🟡 Uyarı  : 3 bulgu
+🟢 Öneri  : 4 bulgu
+
+[C-1] N+1 Sorgu Riski — OrderRepository.GetAll() — Orta büyüklük
+[C-2] Hardcoded JWT Secret — appsettings.json — Küçük büyüklük
+[W-1] EF Core 6 (EOL) — Orta büyüklük
+...
+
+Her bulgu için: "[C-1] Onayla" / "[C-1] Reddet" / "[C-1] Anlat"
+```
+
+Raporlar `.olaf/reports/` altında saklanır — ghost modda, asla commit edilmez.
+
+---
+
 <p align="center">
   <b>AI Olaf Team</b> ile projelerinizde hız, kalite ve kurumsal mimari disiplini her an yanınızda! 🎯
 </p>
