@@ -47,3 +47,4 @@ Aşağıdaki seçeneklerden birini belirterek kararınızı iletebilirsiniz:
 
 > [!CAUTION]
 > **GARANTİ:** Kullanıcı açıkça **"Onayla"** veya **"[2]"** demedikçe, AI Olaf Team projenizin mimarisinde, paketlerinde veya kodlarında **kesinlikle hiçbir değişiklik yapamaz**.
+

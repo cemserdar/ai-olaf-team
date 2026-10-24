@@ -144,7 +144,7 @@ Get-ChildItem -LiteralPath $baseAgentsSource -Filter "*.md" -File | ForEach-Obje
     Copy-Item -LiteralPath $_.FullName -Destination $baseAgentsDir -Force
 }
 
-# 3. 15 AJAN İÇİN LEARNED-SKILLS DOSYALARINI BAŞLAT
+# 3. 16 AJAN İÇİN LEARNED-SKILLS DOSYALARINI BAŞLAT
 $agentsList = @(
     @{ Key = "pm"; Role = "Proje Yöneticisi & Takım Orkestra Şefi"; Tag = "@pm" },
     @{ Key = "architect"; Role = "Baş Yazılım Mimarı"; Tag = "@architect" },
@@ -160,7 +160,8 @@ $agentsList = @(
     @{ Key = "qa"; Role = "Kalite Güvence ve Test Uzmanı"; Tag = "@qa" },
     @{ Key = "refactor"; Role = "Clean Code ve Performans Uzmanı"; Tag = "@refactor" },
     @{ Key = "docs"; Role = "Teknik Yazar ve Dokümantasyon Uzmanı"; Tag = "@docs" },
-    @{ Key = "legal"; Role = "Bilişim Hukuku ve Lisans Uzmanı"; Tag = "@legal" }
+    @{ Key = "legal"; Role = "Bilişim Hukuku ve Lisans Uzmanı"; Tag = "@legal" },
+    @{ Key = "reporter"; Role = "Kıdemli Teknik Raporlama ve Denetim Uzmanı"; Tag = "@reporter" }
 )
 
 $templateSkillPath = Join-Path $olafCentralDir "templates\learned-skill-template.md"
@@ -413,7 +414,7 @@ $agentWorkflowsDir2 = Join-Path $targetDir ".agents\workflows"
 New-Item -ItemType Directory -Force -Path $agentWorkflowsDir1 | Out-Null
 New-Item -ItemType Directory -Force -Path $agentWorkflowsDir2 | Out-Null
 
-$workflowsToCopy = @("olaf-train.md", "pm.md", "sync-skills.md", "review-all.md", "orchestrate-parallel.md", "context-handover.md", "arch-review.md")
+$workflowsToCopy = @("olaf-train.md", "pm.md", "sync-skills.md", "review-all.md", "orchestrate-parallel.md", "context-handover.md", "arch-review.md", "report.md")
 foreach ($wf in $workflowsToCopy) {
     $srcWf = Join-Path $olafCentralDir "workflows\$wf"
     if (Test-Path -LiteralPath $srcWf) {
@@ -440,7 +441,7 @@ Write-Host "$cBlue📜 Çoklu IDE Kural Köprüleri (GEMINI.md, AGENTS.md, .curs
 $masterRules = @"
 # 🤖 AI OLAF TEAM - MERKEZİ ORKESTRASYON VE AJAN PROTOKOLÜ
 
-Bu proje **"AI Olaf Team"** 15 kişilik otonom yazılım ekibi tarafından yönetilmektedir.
+Bu proje **"AI Olaf Team"** 16 kişilik otonom yazılım ekibi tarafından yönetilmektedir.
 Herhangi bir IDE'de (Antigravity IDE, VS Code Gemini Code Assist, GitHub Copilot, Cursor, Cline, Roo Code) çalışırken aşağıdaki protokole %100 uymak zorunludur:
 
 ---
@@ -453,7 +454,7 @@ Herhangi bir IDE'de (Antigravity IDE, VS Code Gemini Code Assist, GitHub Copilot
 
 ---
 
-## 👥 15 UZMAN AJAN VE ETİKET KULLANIMI
+## 👥 16 UZMAN AJAN VE ETİKET KULLANIMI
 Kullanıcı `@etiket` kullandığında veya `@pm` bir alt ajana görev devrettiğinde, o ajanın hem sabit DNA'sı (`.olaf/base-agents/<agent>.md`) hem de projeye özel öğrenilmiş hafızası (`.olaf/learned-skills/<agent>-skills.md`) birlikte hafızaya yüklenmelidir:
 
 - `@pm` -> Proje Yöneticisi & Orkestra Şefi (`.olaf/base-agents/01-pm-agent.md`)
@@ -470,7 +471,8 @@ Kullanıcı `@etiket` kullandığında veya `@pm` bir alt ajana görev devretti�
 - `@qa` -> Kalite Güvence ve Test Otomasyon Uzmanı (`.olaf/base-agents/12-qa-agent.md`)
 - `@refactor` -> Clean Code ve Performans Uzmanı (`.olaf/base-agents/13-refactor-agent.md`)
 - `@docs` -> Teknik Yazar ve Dokümantasyon Uzmanı (`.olaf/base-agents/14-docs-agent.md`)
-- `@legal` -> Bilişim Hukuku ve Lisans Uzmanı (`.olaf/base-agents/15-legal-agent.md`)
+- @legal -> Bilişim Hukuku ve Lisans Uzmanı (.olaf/base-agents/15-legal-agent.md)
+- @reporter -> Kıdemli Teknik Raporlama ve Denetim Uzmanı (.olaf/base-agents/16-reporter-agent.md)
 
 ---
 
@@ -711,7 +713,7 @@ Write-Host "    🎉 AI OLAF TEAM BAŞARIYLA ENTEGRE EDİLDİ!                  
 Write-Host "==========================================================================$cReset"
 Write-Host "📁 Proje Adı       : $cCyan$projectName$cReset"
 Write-Host "🏷️  Proje Türü      : $cYellow$projectType$cReset"
-Write-Host "👥 Hazır Ajanlar   : $cGreen 15 Uzman Ajan (.olaf/base-agents & learned-skills)$cReset"
+Write-Host "👥 Hazır Ajanlar   : $cGreen 16 Uzman Ajan (.olaf/base-agents & learned-skills)$cReset"
 Write-Host "🌉 Kurulan Köprüler: $cCyan Antigravity (.agent/workflows), VS Code, Cursor, Copilot$cReset"
 Write-Host "🛡️  Git İzolasyonu  : $cGreen Tam Korumalı (Olaf dosyaları commit edilmez, repo temiz kalır)$cReset"
 

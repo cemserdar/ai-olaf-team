@@ -89,7 +89,7 @@ fi
 # Merkezi base-agents dosyalarını hedef projeye kopyala
 cp -r "$OLAF_CENTRAL_DIR/base-agents/"*.md "$TARGET_DIR/.olaf/base-agents/"
 
-# 3. 15 AJAN İÇİN LEARNED-SKILLS DOSYALARINI BAŞLAT
+# 3. 16 AJAN İÇİN LEARNED-SKILLS DOSYALARINI BAŞLAT
 AGENTS_LIST=(
     "pm:Proje Yöneticisi & Takım Orkestra Şefi:@pm"
     "architect:Baş Yazılım Mimarı:@architect"
@@ -106,6 +106,7 @@ AGENTS_LIST=(
     "refactor:Clean Code ve Performans Uzmanı:@refactor"
     "docs:Teknik Yazar ve Dokümantasyon Uzmanı:@docs"
     "legal:Bilişim Hukuku ve Lisans Uzmanı:@legal"
+    "reporter:Kıdemli Teknik Raporlama ve Denetim Uzmanı:@reporter"
 )
 
 TEMPLATE_SKILL="$OLAF_CENTRAL_DIR/templates/learned-skill-template.md"
@@ -300,6 +301,8 @@ cp -f "$OLAF_CENTRAL_DIR/workflows/review-all.md" "$TARGET_DIR/.agent/workflows/
 cp -f "$OLAF_CENTRAL_DIR/workflows/orchestrate-parallel.md" "$TARGET_DIR/.agent/workflows/orchestrate-parallel.md"
 cp -f "$OLAF_CENTRAL_DIR/workflows/context-handover.md" "$TARGET_DIR/.agent/workflows/context-handover.md"
 cp -f "$OLAF_CENTRAL_DIR/workflows/arch-review.md" "$TARGET_DIR/.agent/workflows/arch-review.md" 2>/dev/null || true
+cp -f "$OLAF_CENTRAL_DIR/workflows/report.md" "$TARGET_DIR/.agent/workflows/report.md" 2>/dev/null || true
+cp -f "$OLAF_CENTRAL_DIR/workflows/report.md" "$TARGET_DIR/.agents/workflows/report.md" 2>/dev/null || true
 cp -f "$OLAF_CENTRAL_DIR/workflows/arch-review.md" "$TARGET_DIR/.agents/workflows/arch-review.md" 2>/dev/null || true
 
 # Worktree ve Entegrasyon Betiklerini Kopyala
@@ -316,7 +319,7 @@ echo -e "${COLOR_BLUE}📜 Çoklu IDE Kural Köprüleri (GEMINI.md, AGENTS.md, .
 MASTER_RULES_CONTENT=$(cat << 'EOF'
 # 🤖 AI OLAF TEAM - MERKEZİ ORKESTRASYON VE AJAN PROTOKOLÜ
 
-Bu proje **"AI Olaf Team"** 15 kişilik otonom yazılım ekibi tarafından yönetilmektedir.
+Bu proje **"AI Olaf Team"** 16 kişilik otonom yazılım ekibi tarafından yönetilmektedir.
 Herhangi bir IDE'de (Antigravity IDE, VS Code Gemini Code Assist, GitHub Copilot, Cursor, Cline, Roo Code) çalışırken aşağıdaki protokole %100 uymak zorunludur:
 
 ---
@@ -329,7 +332,7 @@ Herhangi bir IDE'de (Antigravity IDE, VS Code Gemini Code Assist, GitHub Copilot
 
 ---
 
-## 👥 15 UZMAN AJAN VE ETİKET KULLANIMI
+## 👥 16 UZMAN AJAN VE ETİKET KULLANIMI
 Kullanıcı `@etiket` kullandığında veya `@pm` bir alt ajana görev devrettiğinde, o ajanın hem sabit DNA'sı (`.olaf/base-agents/<agent>.md`) hem de projeye özel öğrenilmiş hafızası (`.olaf/learned-skills/<agent>-skills.md`) birlikte hafızaya yüklenmelidir:
 
 - `@pm` -> Proje Yöneticisi & Orkestra Şefi (`.olaf/base-agents/01-pm-agent.md`)
@@ -346,7 +349,8 @@ Kullanıcı `@etiket` kullandığında veya `@pm` bir alt ajana görev devretti�
 - `@qa` -> Kalite Güvence ve Test Otomasyon Uzmanı (`.olaf/base-agents/12-qa-agent.md`)
 - `@refactor` -> Clean Code ve Performans Uzmanı (`.olaf/base-agents/13-refactor-agent.md`)
 - `@docs` -> Teknik Yazar ve Dokümantasyon Uzmanı (`.olaf/base-agents/14-docs-agent.md`)
-- `@legal` -> Bilişim Hukuku ve Lisans Uzmanı (`.olaf/base-agents/15-legal-agent.md`)
+- @legal -> Bilişim Hukuku ve Lisans Uzmanı (.olaf/base-agents/15-legal-agent.md)
+- @reporter -> Kıdemli Teknik Raporlama ve Denetim Uzmanı (.olaf/base-agents/16-reporter-agent.md)
 
 ---
 
@@ -558,7 +562,7 @@ echo "    🎉 AI OLAF TEAM BAŞARIYLA ENTEGRE EDİLDİ!                        
 echo -e "==========================================================================${COLOR_RESET}"
 echo -e "📁 Proje Adı       : ${COLOR_CYAN}$PROJECT_NAME${COLOR_RESET}"
 echo -e "🏷️  Proje Türü      : ${COLOR_YELLOW}$PROJECT_TYPE${COLOR_RESET}"
-echo -e "👥 Hazır Ajanlar   : ${COLOR_GREEN}15 Uzman Ajan (.olaf/base-agents & learned-skills)${COLOR_RESET}"
+echo -e "👥 Hazır Ajanlar   : ${COLOR_GREEN}16 Uzman Ajan (.olaf/base-agents & learned-skills)${COLOR_RESET}"
 echo -e "🌉 Kurulan Köprüler: ${COLOR_CYAN}Antigravity (.agent/workflows), VS Code, Cursor, Copilot${COLOR_RESET}"
 echo -e "🛡️  Git İzolasyonu  : ${COLOR_GREEN}Tam Korumalı (Olaf dosyaları commit edilmez, repo temiz kalır)${COLOR_RESET}"
 

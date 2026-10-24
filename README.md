@@ -1,9 +1,9 @@
-# 🚀 AI OLAF TEAM - Otonom, Projeden Bağımsız ve Kendi Kendini Eğiten (Self-Training) 15 Kişilik Yazılım Takımı
+# 🚀 AI OLAF TEAM - Otonom, Projeden Bağımsız ve Kendi Kendini Eğiten (Self-Training) 16 Kişilik Yazılım Takımı
 
 [![License: MIT](https://img.shields.io/badge/Lisans-MIT-blue.svg)](LICENSE)
 [![Platform: Cross-Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)]()
 [![IDE: Antigravity & VS Code](https://img.shields.io/badge/IDE-Antigravity%20%7C%20VS%20Code%20%7C%20Cursor-purple.svg)]()
-[![Agents: 15 Experts](https://img.shields.io/badge/Ekip-15%20Uzman%20Ajan-brightgreen.svg)]()
+[![Agents: 16 Experts](https://img.shields.io/badge/Ekip-16%20Uzman%20Ajan-brightgreen.svg)]()
 
 > **"Tek bir terminal komutuyla (`olaf-init`) istediğiniz herhangi bir projeye bağlanan; mimarisini inceleyip kendi kurallarını kendisi yazan ve masaüstü/laptop bilgisayarlarınız arasında GitHub üzerinden kusursuz senkronize olan profesyonel AI yazılım takımı."**
 
@@ -11,7 +11,7 @@
 
 ## 📑 İÇİNDEKİLER
 1. [🧠 Mimari Felsefe: Sabit DNA vs. Dinamik Hafıza](#-1-mimari-felsefe-sabit-dna-vs-dinamik-haf%C4%B1za)
-2. [👥 15 Kişilik Uzman Kadro](#-2-15-ki%C5%9Filik-uzman-kadro)
+2. [👥 16 Kişilik Uzman Kadro](#-2-16-ki%C5%9Filik-uzman-kadro)
 3. [💻 İlk Kurulum ve GitHub Senkronizasyonu (Masaüstü & Laptop)](#-3-%C4%B0lk-kurulum-ve-github-senkronizasyonu-masa%C3%BCst%C3%BC--laptop)
 4. [⚡ Senaryo 1: Mevcut Bir Projeye Entegrasyon (Brownfield)](#-4-senaryo-1-mevcut-bir-projeye-entegrasyon-brownfield)
 5. [🌱 Senaryo 2: Sıfırdan Yeni Proje Başlatma (Greenfield)](#-5-senaryo-2-s%C4%B1f%C4%B1rdan-yeni-proje-ba%C5%9Flatma-greenfield)
@@ -19,6 +19,11 @@
 7. [🏷️ Doğrudan Ajan Çağırma Örnekleri (@etiket)](#-7-do%C4%9Frudan-ajan-%C3%87a%C4%9F%C4%B1rma-%C3%96rnekleri-etiket)
 8. [🛡️ Git ve Commit İzolasyonu: Sıfır Kirlilik (Ghost Modu)](#-8-git-ve-commit-izolasyonu-s%C4%B1f%C4%B1r-kirlilik-ghost-modu)
 9. [📁 Merkezi Repo Dizin Mimarisi](#-9-merkezi-repo-dizin-mimarisi)
+10. [⚡ Çok Kulvarlı Paralel İcra ve DevOps Release Kapısı (/orchestrate-parallel)](#-10-%C3%A7ok-kulvarl%C4%B1-paralel-%C4%B0cra-ve-devops-release-kap%C4%B1s%C4%B1-orchestrate-parallel)
+11. [🧹 Temiz Context ve Görev Devir Protokolü (/context-handover)](#-11-temiz-context-ve-g%C3%B6rev-devir-protokol%C3%BC-context-handover)
+12. [🧠 Seçici Hafıza ve İsteğe Bağlı Getirme (Selective Memory Retrieval — ADR-11 İla ADR-14)](#-12-se%C3%A7ici-haf%C4%B1za-ve-%C4%B0ste%C4%9Fe-ba%C4%9Fl%C4%B1-getirme-selective-memory-retrieval--adr-11-%C4%B0la-adr-14)
+13. [🏛️ Proaktif Mimari İnceleme (/arch-review)](#-13-proaktif-mimari-%C4%B0nceleme-arch-review)
+14. [📊 Sektör Standartlarında Raporlama Motoru (/report & @reporter)](#-14-sekt%C3%B6r-standartlar%C4%B1nda-raporlama-motoru-report--reporter)
 
 ---
 
@@ -31,7 +36,7 @@ Geleneksel AI prompt sistemlerinin en büyük sorunu şudur: Her projede aynı g
 ```text
 ┌──────────────────────────────────────────────────────────────┐
 │  ~/ai-olaf-team/base-agents/ (SABİT ÇEKİRDEK DNA)            │
-│  - 15 Ajanın evrensel mesleki uzmanlığı, temiz kod ilkeleri  │
+│  - 16 Ajanın evrensel mesleki uzmanlığı, temiz kod ilkeleri  │
 │  - GitHub ile Masaüstü ve Laptop arasında senkronize olur    │
 └──────────────────────────────┬───────────────────────────────┘
                                │ olaf-init ile projeye bağlanır
@@ -50,7 +55,7 @@ Geleneksel AI prompt sistemlerinin en büyük sorunu şudur: Her projede aynı g
 
 ---
 
-## 👥 2. 15 KİŞİLİK UZMAN KADRO
+## 👥 2. 16 KİŞİLİK UZMAN KADRO
 
 | No | Etiket | Rol | Uzmanlık ve Sorumluluk Alanı |
 | :---: | :--- | :--- | :--- |
@@ -69,6 +74,7 @@ Geleneksel AI prompt sistemlerinin en büyük sorunu şudur: Her projede aynı g
 | **13** | `@refactor` | Clean Code ve Performans | Kod kokuları, DRY/KISS/YAGNI, bellek sızıntıları, Guard Clauses, CPU optimizasyonu. |
 | **14** | `@docs` | Teknik Yazar & Dokümantasyon | README, Swagger/OpenAPI, Mermaid.js akış diyagramları, ADR kayıtları, Changelog. |
 | **15** | `@legal` | Bilişim Hukuku ve Lisans | KVKK/GDPR kişisel veri gizliliği, veri anonimleştirme, NuGet/NPM lisans denetimi. |
+| **16** | `@reporter` | Kıdemli Teknik Raporlama Uzmanı | ISO/IEC 25010, IEEE 829, DORA ve OWASP uyumlu operasyonel & yönetsel denetim raporları. |
 
 ---
 
@@ -303,20 +309,26 @@ Mevcut hook'ların korunduğunu ve lint hatası anında commit'in durduğunu ken
 │   ├── 12-qa-agent.md              # Kalite Güvence ve Test Otomasyon Uzmanı (@qa)
 │   ├── 13-refactor-agent.md        # Clean Code ve Performans Uzmanı (@refactor)
 │   ├── 14-docs-agent.md            # Teknik Yazar ve API Docs Uzmanı (@docs)
-│   └── 15-legal-agent.md           # Bilişim Hukuku ve Lisans Denetçisi (@legal)
+│   ├── 15-legal-agent.md           # Bilişim Hukuku ve Lisans Denetçisi (@legal)
+│   └── 16-reporter-agent.md        # Kıdemli Teknik Raporlama Uzmanı (@reporter)
 ├── workflows/                      # Antigravity & VS Code Slash (/komut) İş Akışları
 │   ├── olaf-train.md               # /olaf-train : Projeyi baştan aşağı tarar ve eğitir
 │   ├── pm.md                       # /pm : PM ajanını başlatır ve koordine eder
 │   ├── sync-skills.md              # /sync-skills : Son kod değişikliklerini hafızaya işler
 │   ├── review-all.md               # /review-all : Çoklu ajan denetim raporu sunar
-│   ├── orchestrate-parallel.md     # /orchestrate-parallel : 15 ajanlı paralel Git Worktree orkestrasyonu
-│   └── context-handover.md         # /context-handover : Temiz context bütçesi ve görev devri
+│   ├── orchestrate-parallel.md     # /orchestrate-parallel : 16 ajanlı paralel Git Worktree orkestrasyonu
+│   ├── context-handover.md         # /context-handover : Temiz context bütçesi ve görev devri
+│   ├── arch-review.md              # /arch-review : Proaktif mimari analiz ve öneri bülteni
+│   └── report.md                   # /report : Sektör standartlarında teknik/yönetsel denetim raporu
 ├── templates/                      # Projeye kopyalanacak boş hafıza ve yetenek şablonları
 │   ├── learned-skill-template.md   # Her ajanın projeye özel dolduracağı skill şablonu
 │   ├── project-brain-template.md   # Projenin mimari beyni ve teknoloji haritası şablonu
 │   ├── active-sprint-template.md   # Aktif görev ve 7 paralel kulvar takip tahtası şablonu
 │   ├── task-context-brief-template.md # Görev öncesi izole context brief şablonu
-│   └── task-output-template.md     # Görev tamamlama ve çıktı manifestosu şablonu
+│   ├── task-output-template.md     # Görev tamamlama ve çıktı manifestosu şablonu
+│   ├── arch-review-report-template.md # Mimari analiz ve risk envanteri şablonu
+│   ├── architecture-advisory-template.md # Proaktif mimari öneri bülteni şablonu
+│   └── sector-report-template.md   # Sektör standardı teknik denetim raporu şablonu
 ├── install-windows.bat             # Windows: Tek tıkla otomatik kurulum sihirbazı başlatıcısı
 ├── scripts/
 │   ├── olaf-init.sh                # Linux & macOS: Projeye takımı bağlayan entegrasyon betiği (Bash)
@@ -328,7 +340,11 @@ Mevcut hook'ların korunduğunu ve lint hatası anında commit'in durduğunu ken
 │   ├── olaf-worktree.ps1           # Windows: İzole Git Worktree, Squash Merge & Release Kapısı motoru
 │   ├── olaf-worktree.sh            # Linux & macOS: İzole Git Worktree motoru (Bash)
 │   ├── demo-hook-test.ps1          # Windows: Pre-commit lint koruma ve Ghost modu canlı doğrulama testi
-│   └── demo-hook-test.sh           # Linux & macOS: Pre-commit lint koruma canlı doğrulama testi
+│   ├── demo-hook-test.sh           # Linux & macOS: Pre-commit lint koruma canlı doğrulama testi
+│   ├── olaf-query-memory.ps1       # Windows: Seçici hafıza sorgulama CLI motoru
+│   ├── olaf-query-memory.sh        # Linux & macOS: Seçici hafıza sorgulama CLI motoru
+│   ├── olaf-memory-test.ps1        # Windows: Seçici hafıza 5/5 doğrulama test paketi
+│   └── olaf-memory-test.sh         # Linux & macOS: Seçici hafıza 5/5 doğrulama test paketi
 ├── .gitignore                      # Git yoksayma kuralları
 └── README.md                       # Çok detaylı Türkçe Kullanım ve Senkronizasyon Kılavuzu
 ```
@@ -337,7 +353,7 @@ Mevcut hook'ların korunduğunu ve lint hatası anında commit'in durduğunu ken
 
 ## ⚡ 10. ÇOK KULVARLI PARALEL İCRA VE DEVOPS RELEASE KAPISI (`/orchestrate-parallel`)
 
-AI Olaf Team, 15 ajanın tamamını bağımsızlık durumuna göre paralel kulvarlarda çalıştırmak üzere **Git Worktree Tabanlı Çok Kulvarlı Orkestrasyon** mimarisini benimser.
+AI Olaf Team, 16 ajanın tamamını bağımsızlık durumuna göre paralel kulvarlarda çalıştırmak üzere **Git Worktree Tabanlı Çok Kulvarlı Orkestrasyon** mimarisini benimser.
 
 ```text
                      [@pm Sprint Planlama & Görev Dağıtımı]
@@ -521,6 +537,53 @@ ANALIZ → ÖNERİ BÜLTENİ SUNULUR → KULLANICI SEÇİMİ
 ```
 
 Raporlar `.olaf/reports/` altında saklanır — ghost modda, asla commit edilmez. Kullanıcının ret tercihleri `.olaf/memory/project-brain.md` içinde `user-architectural-preferences` altına işlenir.
+
+---
+
+## 📊 14. SEKTÖR STANDARTLARINDA RAPORLAMA MOTORU (`/report` & `@reporter`)
+
+AI Olaf Team, 16. uzmanı olan **`@reporter`** (Kıdemli Teknik Raporlama ve Bağımsız Denetim Uzmanı) ile projede icra edilen her teknik çalışmayı uluslararası mühendislik ve kalite çerçevelerine (ISO/IEC 25010, IEEE 829, DORA, OWASP, RFC 7807, ACID) göre raporlar.
+
+```text
+Kullanıcı / @pm Tetikler: /report [hedef]
+                        │
+                        ▼
+[@reporter Bağımsız Denetçi]
+  ├─ 1. Kapsam ve Kanıtları Toplar (.olaf/outputs/TASK-XX-output.md, Git Diff, Seçici Hafıza)
+  ├─ 2. İlgili Sektör Standardını Uygular (ISO 25010, OWASP Top 10, IEEE 829, DORA)
+  ├─ 3. Metrik ve Kabul Kriterlerini Doğrular (Sözleşme Bütünlüğü, SLA, Test Kapsamı)
+  └─ 4. İki Kademeli Standart Rapor Üretir (.olaf/reports/report-<hedef>-<tarih>.md)
+        ├─ 👔 Yönetsel Özet (C-Level / PO: Karar, Risk, Hız)
+        └─ 🔬 Teknik Derinlemesine İnceleme (Mühendisler: RFC, Kod İzi, Güvenlik)
+```
+
+### 🎯 Desteklenen Sektör Standartları Matrisi
+
+| Standart / Çerçeve | Uygulanan Ajan / Alan | Raporlanan Temel Metrikler ve Kriterler |
+| :--- | :--- | :--- |
+| **ISO/IEC 25010** | `@architect`, Genel Kalite | Modülerlik, sürdürülebilirlik, hata toleransı, kaynak kullanımı, taşınabilirlik. |
+| **IEEE 829** | `@qa` Test Mühendisliği | Test vaka tasarımı, pass/fail oranları, boundary value analizi, mock doğrulaması. |
+| **DORA Metrikleri** | `@devops` CI/CD | Dağıtım sıklığı (Deployment Frequency), MTTR, Change Failure Rate, Lead Time. |
+| **OWASP Top 10 & ASVS** | `@security` Siber Güvenlik | A01 Yetki aşımı, A02 Kriptografik zaafiyetler, A03 Injection, secret sızıntıları. |
+| **RFC 7807 & REST** | `@backend` Web API | Problem Details hata yanıt formatı, HTTP durum kodları, idempotent metodlar. |
+| **ACID / CAP Teoremi** | `@db` Veritabanı | Transaction izolasyon seviyeleri, rollback garantisi, Foreign Key ve Indexleme. |
+
+### 🛠️ Kullanım ve Komut Örnekleri
+
+```bash
+# Antigravity veya VS Code terminalinde/chatinde:
+/report backend      # Backend ajanının son görevlerini, REST & RFC 7807 uyumunu raporlar
+/report db           # Veritabanı şema değişiklikleri, migration rollback ve ACID denetimi
+/report security     # OWASP Top 10 açıkları, secret taraması ve CVSS risk skorları
+/report qa           # IEEE 829 test koşum sonuçları, edge-case kapsamı ve regresyon riski
+/report devops       # CI/CD süreleri, multi-stage Docker optimizasyonu ve DORA metrikleri
+/report sprint       # Aktif sprint tamamlama oranı, kulvar hızları ve kapsam sapması
+/report TASK-03      # Belirli bir atomik görevin baştan sona teslimat ve uyumluluk raporu
+```
+
+### 🔒 Ghost Modu ve Rapor Arşivi
+
+Tüm raporlar `.olaf/reports/` klasöründe zaman damgalı olarak üretilir (`report-backend-20261024-173000.md`). Bu klasör `.gitignore` ile yerel geliştirme alanında tutulur ve Git geçmişine sızdırılmaz.
 
 ---
 
