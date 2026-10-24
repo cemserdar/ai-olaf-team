@@ -85,3 +85,4 @@ Bu rapor, AI Olaf Team izole denetim motoru tarafından deterministik olarak ür
 - **Tarih & Saat:** {{TIMESTAMP}}  
 
 > *Not: Bu rapor `.olaf/reports/` altında saklanır ve projenin iş kodları reposuna sızmaz (Ghost Modu).*
+

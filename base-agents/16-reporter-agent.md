@@ -62,3 +62,4 @@ Tüm raporlar `templates/sector-report-template.md` şablonuna sadık kalınarak
   *"`@reporter backend'in son görevdeki performansını raporla`"* veya *"`/report TASK-04`"*
 - `@reporter`, ilgili ajanın çıktısını (`.olaf/outputs/`) okur, gerekli ek verileri seçici hafızadan çeker.
 - Raporu `.olaf/reports/REPORT-<ALAN>-<TARİH>.md` olarak yazar ve kullanıcıya Türkçe, net bir yönetici özeti sunar.
+

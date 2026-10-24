@@ -84,3 +84,4 @@ Kullanıcıya sohbet penceresinde şu formatta profesyonel bir teslimat mesajı 
 1. **Sıfır Halüsinasyon:** Ölçülmeyen veya test edilmeyen hiçbir metrik raporda "tamamlandı / başarılı" gösterilemez.
 2. **Objektif Denetim:** Hatalar veya eksikler örtbas edilmez; profesyonelce "İyileştirme Aksiyonu" olarak sunulur.
 3. **Müdahale Yasağı:** `@reporter` yalnızca rapor üretir; kod üzerinde hiçbir değişiklik yapmaz.
+
