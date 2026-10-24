@@ -117,3 +117,11 @@ Bu bölüm her commit sonrasında post-commit hook veya sync-skills tarafından 
 2. Yeni bir kütüphane eklenecekse önce `@architect` ve `@legal` onayı gerekir.
 3. Görev bitiminde mutlaka testler (`@qa`) ve güvenlik taraması (`@security`) yapılır.
 4. Yapılan her değişiklik sonrası ilgili ajan kendi yetenek dosyasını günceller.
+
+---
+
+## KEY: user-architectural-preferences
+### 🏛️ 10. KULLANICI MİMARİ TERCİHLERİ VE ONAY/RED GEÇMİŞİ
+<!-- updated: {{LAST_UPDATED}} -->
+Bu bölüm, kullanıcının kendisine sunulan mimari danışmanlık bültenlerine verdiği kararları saklar. Reddedilen öneriler tekrar kullanıcının önüne getirilmez:
+- *(Henüz kaydedilmiş bir mimari tercih veya ret kaydı bulunmamaktadır)*

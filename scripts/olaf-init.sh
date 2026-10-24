@@ -365,12 +365,17 @@ Projede kod yazıldığında, bir bug çözüldüğünde veya yeni bir model ekl
 ---
 
 ## 🧼 CONTEXT BUDGET VE TEMİZ GÖREV ÇAĞRI PROTOKOLÜ (CLEAN CONTEXT)
-1. **Brief Olmadan Göreve Başlanmaz:** Hiçbir ajan serbest sohbet mesajıyla veya belirsiz talimatla çalışmaz. Her görev için `.olaf/contexts/TASK-XX-brief.md` dosyası oluşturulmalıdır.
-2. **Katı Dosya Kapsamı (File Scope):** Ajan yalnızca brief'te belirtilen `READ ONLY` ve `WRITE ALLOWED` dosyalarıyla sınırlıdır. Kapsam dışındaki hiçbir dosya açılamaz veya değiştirilemez.
-3. **Çıktı Manifestosu Standartı:** Görev tamamlandığında ajan özetini `.olaf/outputs/TASK-XX-output.md` dosyasına yazar. Bağımlı görevler yalnızca bu manifestoyu referans alır; sohbet geçmişi taşınmaz.
+1. **Brief Olmadan Göreve Başlanmaz:** Hiçbir ajan serbest sohbet mesajıyla veya belirsiz talimatla çalışmaz. Her görev için .olaf/contexts/TASK-XX-brief.md dosyası oluşturulmalıdır.
+2. **Katı Dosya Kapsamı (File Scope):** Ajan yalnızca brief'te belirtilen READ ONLY ve WRITE ALLOWED dosyalarıyla sınırlıdır. Kapsam dışındaki hiçbir dosya açılamaz veya değiştirilemez.
+3. **Çıktı Manifestosu Standartı:** Görev tamamlandığında ajan özetini .olaf/outputs/TASK-XX-output.md dosyasına yazar. Bağımlı görevler yalnızca bu manifestoyu referans alır; sohbet geçmişi taşınmaz.
 
 ---
+## 💡 PROAKTİF MİMARİ DANIŞMANLIK VE SIFIR İZİNLİ MÜDAHALE KURALI (ZERO-TOUCH CONSENT GATE)
+1. **Dürüstçe Öner:** Projede mimari hata, N+1 sorgu, async deadlock, bellek sızıntısı veya proje yapısına daha uygun bir mimari alternatif tespit edersen bunu kullanıcıya açıkça öner.
+2. **Sormadan Asla Değiştirme:** Kullanıcı açıkça ONAY vermeden tek bir sınıfın katmanını, kod yapısını veya konfigürasyonunu KESİNLİKLE KENDİLİĞİNDEN DEĞİŞTİRME!
+3. **Kullanıcı Kararına Saygı:** Kullanıcı mevcut yapıyı korumayı seçerse (.olaf/memory/project-brain.md içine kaydedilir), mevcut koda %100 sadık kalarak geliştirmeye devam et.
 
+---
 ## 🛡️ GİT VE COMMIT İZOLASYON PROTOKOLÜ (HAYALET EKİP KURALI)
 AI Olaf Team altyapı dosyaları (`.olaf/`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, `.clinerules`, `.agent/`, `.agents/`, `.gemini/`, `.idx/`) yalnızca yerel asistanlık ve takım orkestrasyonu içindir:
 - **ASLA COMMIT EDİLMEZ:** Hiçbir ajan veya otomasyon, AI Olaf Team altyapı ve kural dosyalarını Git reposuna stage edemez veya commit edemez.

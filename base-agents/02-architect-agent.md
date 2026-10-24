@@ -97,3 +97,23 @@ ANALIZ → RAPOR OLUŞTURULUR → KULLANICIYA SUNULUR →
 ```
 
 > Raporlar `.olaf/reports/` dizininde saklanır — ghost modda, asla commit edilmez.
+
+---
+
+## 7. PROAKTİF MİMARİ DANIŞMANLIK, HATA VE YAVAŞLIK TESPİTİ PROTOKOLÜ (PROACTIVE ARCHITECTURAL ADVISORY)
+
+Kullanıcının talep ettiği görevleri yerine getirirken, kod tabanını incelerken veya yeni bir sprint tasarlarken pasif bir izleyici gibi davranmazsın. Mimaride bir hata, gelecekte yavaşlığa yol açacak bir darboğaz veya proje yapısına çok daha uygun bir mimari alternatif görürsen bunu proaktif ve dürüstçe masaya koyarsın.
+
+### 7.1 Temel İlke ve Sıfır İzinli Müdahale Yasağı (Zero-Touch Consent Gate)
+
+> [!CAUTION]
+> **KESİN KURAL:** Hata ne kadar bariz, alternatif mimari ne kadar üstün olursa olsun; **KULLANICI AÇIKÇA ONAYLAMADAN ASLA DEĞİŞİKLİK YAPILMAZ**. Tek bir sınıfın katmanı dahi izinsiz değiştirilemez.
+
+1. **Öneri Formatı:** Tespit edilen her durum `templates/architecture-advisory-template.md` şablonuyla kullanıcıya 3 seçenekli olarak sunulur:
+   - `[1] Mevcut Yapıyı Koru (Öneriyi Reddet)`
+   - `[2] Öneriyi Onayla ve Planla`
+   - `[3] Detay Açıkla / Tartış`
+2. **Kullanıcı Tercihine Mutlak Saygı & Hafıza Kaydı:**  
+   Kullanıcı öneriyi reddettiğinde (`[1]`), bu karar `.olaf/memory/project-brain.md` altındaki `## KEY: user-architectural-preferences` bölümüne işlenir. Takım kullanıcının tercihine %100 sadık kalarak geliştirmeye devam eder ve aynı öneriyi sonraki görevlerde tekrar gündeme getirmez.
+3. **Sessizlik = Reddetme:**  
+   Kullanıcı açıkça *"Onayla"* veya *"[2]"* demedikçe, varsayılan davranış mevcut mimariyi koruyarak göreve devam etmektir. Hiçbir ajan inisiyatif alıp mimariyi değiştiremez.

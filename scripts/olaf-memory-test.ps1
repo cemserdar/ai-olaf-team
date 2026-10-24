@@ -70,7 +70,7 @@ Report-Result "Test B - Bölüm İzolasyonu" $testBPassed "Hedef KEY bulundu: $h
 # --- TEST C: Güncellik (Freshness) Uyarısı ---
 Write-Host "`n$cBold▶ Test C: Güncellik (Freshness) Uyarısı$cReset"
 $resultC = & powershell -ExecutionPolicy Bypass -File $queryScript -File brain -Section tech-stack -MaxAgeDays 7
-$hasWarning = ($resultC -match "⚠️  UYARI")
+$hasWarning = ($resultC -match "UYARI")
 
 $testCPassed = $hasWarning
 Report-Result "Test C - Güncellik Uyarısı" $testCPassed "8 günlük tech-stack bölümü için '--max-age 7' uyarısı tetiklendi: $hasWarning"

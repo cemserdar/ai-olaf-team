@@ -494,6 +494,14 @@ Projede kod yazıldığında, bir bug çözüldüğünde veya yeni bir model ekl
 3. **Ã‡Ä±ktÄ± Manifestosu StandartÄ±:** GÃ¶rev tamamlandÄ±ÄŸÄ±nda ajan Ã¶zetini .olaf/outputs/TASK-XX-output.md dosyasÄ±na yazar. BaÄŸÄ±mlÄ± gÃ¶revler yalnÄ±zca bu manifestoyu referans alÄ±r; sohbet geÃ§miÅŸi taÅŸÄ±nmaz.
 
 ---
+
+---
+## 💡 PROAKTİF MİMARİ DANIŞMANLIK VE SIFIR İZİNLİ MÜDAHALE KURALI (ZERO-TOUCH CONSENT GATE)
+1. **Dürüstçe Öner:** Projede mimari hata, N+1 sorgu, async deadlock, bellek sızıntısı veya proje yapısına daha uygun bir mimari alternatif tespit edersen bunu kullanıcıya açıkça öner.
+2. **Sormadan Asla Değiştirme:** Kullanıcı açıkça ONAY vermeden tek bir sınıfın katmanını, kod yapısını veya konfigürasyonunu KESİNLİKLE KENDİLİĞİNDEN DEĞİŞTİRME!
+3. **Kullanıcı Kararına Saygı:** Kullanıcı mevcut yapıyı korumayı seçerse (.olaf/memory/project-brain.md içine kaydedilir), mevcut koda %100 sadık kalarak geliştirmeye devam et.
+
+---
 ## 🛡️ GİT VE COMMIT İZOLASYON PROTOKOLÜ (HAYALET EKİP KURALI)
 AI Olaf Team altyapı dosyaları (`.olaf/`, `AGENTS.md`, `GEMINI.md`, `.cursorrules`, `.clinerules`, `.agent/`, `.agents/`, `.gemini/`, `.idx/`) yalnızca yerel asistanlık ve takım orkestrasyonu içindir:
 - **ASLA COMMIT EDİLMEZ:** Hiçbir ajan veya otomasyon, AI Olaf Team altyapı ve kural dosyalarını Git reposuna stage edemez veya commit edemez.

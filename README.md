@@ -493,35 +493,34 @@ Her agent çağrısında tüm hafıza dosyalarını (`project-brain.md`, `active
 | 🟡 **Uyarı** | Eski kütüphane sürümü, test kapsamı %0, anemic domain model |
 | 🟢 **Öneri** | Cache katmanı, CQRS fırsatı, pagination eksikliği, circuit breaker |
 
-### 🔒 Değişiklik Kapısı (Kesin Kural)
+### 🔒 Sıfır İzinli Değişiklik Kapısı (Zero-Touch Consent Gate — Kesin Kural)
 
 ```
-ANALIZ → RAPOR SUNULUR → KULLANICI KARARI
-  ├─ "Onayla"  → @pm sprint'e TASK-XX ekler → Standart akış başlar
-  ├─ "Reddet"  → Raporda arşivlenir, hiçbir şey değişmez
-  └─ "Anlat"   → @architect açıklar, yine hiçbir şey değişmez
+ANALIZ → ÖNERİ BÜLTENİ SUNULUR → KULLANICI SEÇİMİ
+  ├─ [1] "Mevcut Yapıyı Koru" → project-brain'e kaydedilir, mevcut koda %100 sadık kalınır (aynı öneri tekrarlanmaz)
+  ├─ [2] "Onayla ve Planla"   → @pm sprint'e TASK-XX ekler → Kontrollü refactoring başlar
+  └─ [3] "Detay Açıkla"       → @architect teknik gerekçeleri izah eder, yine hiçbir şey değişmez
 ```
 
-`@architect` kullanıcı "Onayla" demeden **tek bir satır bile değiştiremez**.
+> **🛡️ KESİN GÜVENLİK GARANTİSİ:**  
+> Kullanıcı açıkça **"Onayla"** veya **"[2]"** demedikçe, AI Olaf Team projenizin mimarisinde, paketlerinde veya kodlarında **kesinlikle hiçbir değişiklik yapamaz**. `@architect` teşhis koyar, dürüstçe önerir; karar daima kullanıcıya aittir.
 
-### 📋 Örnek Rapor Çıktısı
+### 📋 Örnek Öneri Bülteni Çıktısı
 
 ```
-📋 Mimari İnceleme Tamamlandı — MyProject
+💡 [MİMARİ ÖNERİ] — OrderRepository N+1 Sorgu ve Bellek Tıkanması Riski
+- 🔍 Mevcut Durum: Döngü içinde her sipariş için veritabanına tekil sorgu atılıyor.
+- ⚠️ Tespit Edilen Risk: 1.000 siparişte 1.001 SQL sorgusu oluşur, API kilitlenir.
+- 🚀 Önerilen Alternatif: Eager loading (Include) veya Split Query deseni.
+- ⏳ Tahmini Efor / Etki: Küçük (1 dosya, 4 satır değişiklik, API sözleşmesi bozulmaz).
 
-🔴 Kritik : 2 bulgu
-🟡 Uyarı  : 3 bulgu
-🟢 Öneri  : 4 bulgu
-
-[C-1] N+1 Sorgu Riski — OrderRepository.GetAll() — Orta büyüklük
-[C-2] Hardcoded JWT Secret — appsettings.json — Küçük büyüklük
-[W-1] EF Core 6 (EOL) — Orta büyüklük
-...
-
-Her bulgu için: "[C-1] Onayla" / "[C-1] Reddet" / "[C-1] Anlat"
+👉 Ne Yapmak İstersiniz?
+- [1] Mevcut Yapıyı Koru (Öneriyi Reddet)
+- [2] Öneriyi Onayla ve Planla
+- [3] Detay Açıkla
 ```
 
-Raporlar `.olaf/reports/` altında saklanır — ghost modda, asla commit edilmez.
+Raporlar `.olaf/reports/` altında saklanır — ghost modda, asla commit edilmez. Kullanıcının ret tercihleri `.olaf/memory/project-brain.md` içinde `user-architectural-preferences` altına işlenir.
 
 ---
 
