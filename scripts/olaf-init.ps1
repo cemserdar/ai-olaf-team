@@ -502,18 +502,23 @@ Projede kod yazıldığında, bir bug çözüldüğünde veya yeni bir model ekl
 
 ---
 
-## ğŸ§¼ CONTEXT BUDGET VE TEMÄ°Z GÃ–REV Ã‡AÄRI PROTOKOLÃœ (CLEAN CONTEXT)
-1. **Brief Olmadan GÃ¶reve BaÅŸlanmaz:** HiÃ§bir ajan serbest sohbet mesajÄ±yla veya belirsiz talimatla Ã§alÄ±ÅŸmaz. Her gÃ¶rev iÃ§in .olaf/contexts/TASK-XX-brief.md dosyasÄ± oluÅŸturulmalÄ±dÄ±r.
-2. **KatÄ± Dosya KapsamÄ± (File Scope):** Ajan yalnÄ±zca brief'te belirtilen READ ONLY ve WRITE ALLOWED dosyalarÄ±yla sÄ±nÄ±rlÄ±dÄ±r. Kapsam dÄ±ÅŸÄ±ndaki hiÃ§bir dosya aÃ§Ä±lamaz veya deÄŸiÅŸtirilemez.
-3. **Ã‡Ä±ktÄ± Manifestosu StandartÄ±:** GÃ¶rev tamamlandÄ±ÄŸÄ±nda ajan Ã¶zetini .olaf/outputs/TASK-XX-output.md dosyasÄ±na yazar. BaÄŸÄ±mlÄ± gÃ¶revler yalnÄ±zca bu manifestoyu referans alÄ±r; sohbet geÃ§miÅŸi taÅŸÄ±nmaz.
+## 🧼 CONTEXT BUDGET VE TEMİZ GÖREV ÇAĞRI PROTOKOLÜ (CLEAN CONTEXT)
+1. **Brief Olmadan Göreve Başlanmaz:** Hiçbir ajan serbest sohbet mesajıyla veya belirsiz talimatla çalışmaz. Her görev için .olaf/contexts/TASK-XX-brief.md dosyası oluşturulmalıdır.
+2. **Katı Dosya Kapsamı (File Scope):** Ajan yalnızca brief'te belirtilen READ ONLY ve WRITE ALLOWED dosyalarıyla sınırlıdır. Kapsam dışındaki hiçbir dosya açılamaz veya değiştirilemez.
+3. **Çıktı Manifestosu Standartı:** Görev tamamlandığında ajan özetini .olaf/outputs/TASK-XX-output.md dosyasına yazar. Bağımlı görevler yalnızca bu manifestoyu referans alır; sohbet geçmişi taşınmaz.
 
 ---
 
 ---
-## 💡 PROAKTİF MİMARİ DANIŞMANLIK VE SIFIR İZİNLİ MÜDAHALE KURALI (ZERO-TOUCH CONSENT GATE)
-1. **Dürüstçe Öner:** Projede mimari hata, N+1 sorgu, async deadlock, bellek sızıntısı veya proje yapısına daha uygun bir mimari alternatif tespit edersen bunu kullanıcıya açıkça öner.
-2. **Sormadan Asla Değiştirme:** Kullanıcı açıkça ONAY vermeden tek bir sınıfın katmanını, kod yapısını veya konfigürasyonunu KESİNLİKLE KENDİLİĞİNDEN DEĞİŞTİRME!
-3. **Kullanıcı Kararına Saygı:** Kullanıcı mevcut yapıyı korumayı seçerse (.olaf/memory/project-brain.md içine kaydedilir), mevcut koda %100 sadık kalarak geliştirmeye devam et.
+## 💡 OTONOM KARAR VE SIFIR KESİNTİ PROTOKOLÜ (PM AUTONOMOUS APPROVAL & ZERO INTERRUPTION)
+1. **@pm Tam Yetkili Otonom Karar Vericidir:** Geliştirme sürecindeki teknik adımlar, bug çözümleri, refactoring, dosya oluşturma/güncelleme, paket/araç kurulumları ve uygulama detayları için **kullanıcıya onay sorusu veya çoktan seçmeli seçenek sorulmaz**. @pm mimari standartlara ve projenin beynine en uygun çözümü doğrudan seçer, onaylar ve ekibe uygulatır.
+2. **Kullanıcı Onayı Yalnızca 2 İstisnai Durumda Sorulur (Human-in-the-Loop):**
+   - **Görsel / Tasarımsal Değişiklikler (UI/UX):** Kullanıcının doğrudan gördüğü ekran tasarımları, köklü sayfa düzeni (layout), tema ve renk paleti değişimleri.
+   - **Kritik / Yıkıcı Backend Kararları (Breaking Changes):** Veri kaybı riski taşıyan veritabanı operasyonları (tablo/veri silme veya reset), mevcut API sözleşmesini (contract) kıran değişiklikler veya temel mimarinin kökten değiştirilmesi.
+3. **IDE Onay Pencerelerini Engelleme Kuralı (Zero IDE Modal Rule):**
+   - IDE'nin kullanıcıya onay kutusu (popup/modal - "Allow update...") çıkarmasını önlemek için dosya oluşturma ve düzenleme işlemleri ASLA run_command içinde inline PowerShell / Bash betikleriyle yapılmaz.
+   - Her zaman IDE'nin yerel dosya araçları (write_file, edit_file) kullanılır; böylece tüm dosya işlemleri sessizce, güvenle ve kullanıcıyı rahatsız etmeden icra edilir.
+   - Terminal komutları (run_command) yalnızca derleme (build), test, paket yönetimi ve git gibi zorunlu kabuk komutlarında standart sandbox modunda ve prefix-matchable yalın biçimde çalıştırılır.
 
 ---
 ## 🛡️ GİT VE COMMIT İZOLASYON PROTOKOLÜ (HAYALET EKİP KURALI)
