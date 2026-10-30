@@ -5,7 +5,7 @@ Bu iş akışı, projeyi 5 farklı uzmanlık alanında (`@architect`, `@security
 ---
 
 ## 🎯 İŞ AKIŞI HEDEFİ
-Tek bir komutla projedeki mimari uyumsuzlukları, güvenlik açıklarını, performans darboğazlarını, eksik testleri ve hukuki riskleri tespit edip önceliklendirilmiş aksiyon planı hazırlamak.
+Tek bir komutla projedeki mimari uyumsuzlukları, güvenlik açıklarını, LLM/Agent girdi zaafiyetlerini, performans darboğazlarını, eksik testleri ve hukuki riskleri tespit edip önceliklendirilmiş aksiyon planı hazırlamak.
 
 ---
 
@@ -17,14 +17,17 @@ Tek bir komutla projedeki mimari uyumsuzlukları, güvenlik açıklarını, perf
 3. Spagetti Controller veya tanrı sınıfların (God Object) varlığını tespit et.
 4. Çıktı: Mimari Uyumluluk Notu ve Risk Seviyesi.
 
-### AŞAMA 2: SİBER GÜVENLİK VE APPSEC DENETİMİ (`@security`)
+### AŞAMA 2: SİBER GÜVENLİK, APPSEC VE LLM GUARDRAIL DENETİMİ (`@security`)
 1. **OWASP Top 10 Taraması:**
    - SQL Injection (Raw SQL, String interpolation içeren sorgular).
    - XSS ve HTML Injection (Sanitize edilmemiş kullanıcı girdileri).
    - Yetkisiz Erişim (Eksik `[Authorize]` veya rol kontrolleri).
    - CSRF & CORS (Aşırı izin verilmiş `AllowAnyOrigin()` kuralları).
 2. **Hassas Veri ve Gizli Anahtar Kontrolü:** Kod içinde unutulmuş şifre, connection string, JWT secret veya API key var mı?
-3. Çıktı: Güvenlik Zafiyetleri Tablosu (Kritik, Yüksek, Orta, Düşük).
+3. **LLM & Agent Security Guardrail Taraması (20 Tehdit Vektörü):**
+   - Sisteme gelen istemler, MCP/araç parametreleri, hafıza okuma/yazma işlemleri ve harici veri kaynakları 1'den 20'ye kadar (Prompt Injection'dan Multi-Step Logic Bombs'a) sırayla denetleniyor mu?
+   - Tehdit durumunda kesin bloklama (`BLOCK`) ve yapılandırılmış JSON guardrail çıktısı uygulanıyor mu?
+4. Çıktı: Güvenlik Zafiyetleri Tablosu (Kritik, Yüksek, Orta, Düşük) ve Guardrail Durum Raporu.
 
 ### AŞAMA 3: CLEAN CODE VE PERFORMANS DENETİMİ (`@refactor`)
 1. DRY, KISS ve YAGNI prensiplerine aykırı yinelenen kod bloklarını bul.
@@ -64,6 +67,7 @@ Tek bir komutla projedeki mimari uyumsuzlukları, güvenlik açıklarını, perf
 
 ### 2. 🔐 Güvenlik Raporu (@security)
 - [Güvenlik Zafiyeti, Etki Alanı ve Kod Yaması]
+- [LLM Guardrail Tehdit Analizi: 20 Tehdit Vektörü Değerlendirmesi]
 
 ### 3. ⚡ Performans & Temiz Kod Raporu (@refactor)
 - [Kod Kokusu ve İyileştirme Çözümü]
