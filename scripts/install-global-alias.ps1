@@ -1,4 +1,4 @@
-<#
+﻿<#
 ==============================================================================
 AI OLAF TEAM - WINDOWS GLOBAL KOMUT VE ALIAS KURULUM BETİĞİ (POWERSHELL)
 ==============================================================================
@@ -89,9 +89,13 @@ try {
 }
 
 # 3. ORTAM DEĞİŞKENİNİ (AI_OLAF_TEAM_DIR) KALICI OLARAK TANIMLA
-[Environment]::SetEnvironmentVariable("AI_OLAF_TEAM_DIR", $repoDir, "User")
+try {
+    [Environment]::SetEnvironmentVariable("AI_OLAF_TEAM_DIR", $repoDir, "User")
+    Write-Host "$cGreen$symCheck Kullanıcı Ortam Değişkeni Tanımlandı:$cReset AI_OLAF_TEAM_DIR = $repoDir"
+} catch {
+    Write-Host "$cYellow$symWarn Kullanıcı Ortam Değişkeni kayıt defterine yazılamadı (Kısıtlı yetki/Sandbox). Oturum değişkeni kullanılacak.$cReset"
+}
 $env:AI_OLAF_TEAM_DIR = $repoDir
-Write-Host "$cGreen$symCheck Kullanıcı Ortam Değişkeni Tanımlandı:$cReset AI_OLAF_TEAM_DIR = $repoDir"
 
 # 4. KULLANICI İÇİN ÇALIŞTIRILABİLİR BIN DİZİNİ OLUŞTUR (~/.local/bin)
 $localBin = Join-Path $HOME ".local\bin"
@@ -117,8 +121,10 @@ endlocal
 "@
 [System.IO.File]::WriteAllText((Join-Path $localBin "olaf-init.cmd"), $cmdWrapper, $utf8NoBom)
 [System.IO.File]::WriteAllText((Join-Path $localBin "olaf-init.bat"), $cmdWrapper, $utf8NoBom)
+[System.IO.File]::WriteAllText((Join-Path $localBin "olaf-update.cmd"), $cmdWrapper, $utf8NoBom)
+[System.IO.File]::WriteAllText((Join-Path $localBin "olaf-update.bat"), $cmdWrapper, $utf8NoBom)
 
-# Git Bash / MSYS terminali için olaf-init wrapper'ı
+# Git Bash / MSYS terminali için olaf-init ve olaf-update wrapper'ı
 $repoDirUnix = $repoDir.Replace('\', '/')
 $bashWrapper = @"
 #!/usr/bin/env bash
@@ -133,6 +139,7 @@ fi
 "@
 $bashWrapperLf = $bashWrapper.Replace("`r`n", "`n")
 [System.IO.File]::WriteAllText((Join-Path $localBin "olaf-init"), $bashWrapperLf, $utf8NoBom)
+[System.IO.File]::WriteAllText((Join-Path $localBin "olaf-update"), $bashWrapperLf, $utf8NoBom)
 
 # ÖNEMLİ: PowerShell'in PATH içindeki .ps1 dosyasını Bypass olmadan doğrudan çalıştırmasını engellemek için
 # .local\bin içindeki eski olaf-init.ps1 varsa kaldırılır (PowerShell olaf-init.cmd veya Profil fonksiyonunu kullanmalıdır)
@@ -147,13 +154,17 @@ Write-Host "   - $localBin\olaf-init.bat (Batch)"
 Write-Host "   - $localBin\olaf-init (Git Bash / MSYS)"
 
 # 5. PATH ORTAM DEĞİŞKENİNİ GÜNCELLE
-$currentUserPath = [Environment]::GetEnvironmentVariable("PATH", "User")
-if ($currentUserPath -notlike "*$localBin*") {
-    $newUserPath = if ([string]::IsNullOrWhiteSpace($currentUserPath)) { $localBin } else { "$currentUserPath;$localBin" }
-    [Environment]::SetEnvironmentVariable("PATH", $newUserPath, "User")
-    Write-Host "$cGreen$symCheck PATH Ortam Değişkeni Güncellendi:$cReset $localBin eklendi."
-} else {
-    Write-Host "$cYellow$symCheck PATH içinde $localBin zaten kayıtlı.$cReset"
+try {
+    $currentUserPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+    if ($currentUserPath -notlike "*$localBin*") {
+        $newUserPath = if ([string]::IsNullOrWhiteSpace($currentUserPath)) { $localBin } else { "$currentUserPath;$localBin" }
+        [Environment]::SetEnvironmentVariable("PATH", $newUserPath, "User")
+        Write-Host "$cGreen$symCheck PATH Ortam Değişkeni Güncellendi:$cReset $localBin eklendi."
+    } else {
+        Write-Host "$cYellow$symCheck PATH içinde $localBin zaten kayıtlı.$cReset"
+    }
+} catch {
+    Write-Host "$cYellow$symWarn PATH kayıt defterine yazılamadı (Kısıtlı yetki/Sandbox).$cReset"
 }
 # Mevcut çalışan session'ın PATH değişkenine de ekle
 if ($env:PATH -notlike "*$localBin*") {
@@ -172,6 +183,9 @@ function olaf-init {
     } else {
         & powershell -NoProfile -ExecutionPolicy Bypass -File `$olafScript `@args
     }
+}
+function olaf-update {
+    olaf-init `@args
 }
 # <<< AI OLAF TEAM GLOBAL INTEGRATION <<<
 "@
@@ -255,7 +269,8 @@ GEMINI.md
 
 Write-Host "`n$cBold$cGreen$symTrophy TEBRİKLER! Windows Kurulumu Başarıyla Tamamlandı.$cReset"
 Write-Host "`nDeğişikliklerin geçerli olması için PowerShell, CMD veya VS Code terminalinizi kapatıp yeniden açın."
-Write-Host "Artık dilediğiniz herhangi bir proje klasörüne gidip sadece:"
-Write-Host "   $cBold$cGreen olaf-init $cReset"
-Write-Host "yazarak 15 kişilik otonom ekibi projenize anında dahil edebilirsiniz!"
+Write-Host "Artık dilediğiniz herhangi bir proje klasörüne gidip:"
+Write-Host "   - Sıfırdan ekibi dahil etmek için: $cBold$cGreen olaf-init $cReset"
+Write-Host "   - Mevcut projeyi güncellemek için: $cBold$cGreen olaf-update $cReset"
+Write-Host "yazarak 15 kişilik otonom ekibin en güncel yeteneklerini projenize aktarabilirsiniz!"
 Write-Host "$cGreen🛡️  Tüm projelerinizde Olaf ekip dosyaları otomatik olarak Git commit'lerinden korunur.$cReset`n"

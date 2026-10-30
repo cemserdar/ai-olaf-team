@@ -73,7 +73,16 @@ if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
 fi
 
 # 2. .olaf DİZİN YAPISINI OLUŞTUR
-echo -e "\n${COLOR_BLUE}📂 .olaf Hafıza ve Yetenek Dizinleri Oluşturuluyor...${COLOR_RESET}"
+IS_UPDATE=false
+if [ -d "$TARGET_DIR/.olaf" ]; then
+    IS_UPDATE=true
+    echo -e "\n${COLOR_CYAN}${COLOR_BOLD}🔄 MEVCUT PROJE TESPİT EDİLDİ: AI Olaf Team Güncelleme Modunda...${COLOR_RESET}"
+    echo -e "   ✓ Ajan DNA'ları (16 Ajan, Security Guardrail vb.) güncelleniyor."
+    echo -e "   ✓ Slash iş akışları (.agent/workflows) ve IDE kuralları senkronize ediliyor."
+    echo -e "   ✓ Projeye özel öğrenilmiş hafıza (.olaf/learned-skills/) korunuyor."
+else
+    echo -e "\n${COLOR_BLUE}📂 .olaf Hafıza ve Yetenek Dizinleri Oluşturuluyor...${COLOR_RESET}"
+fi
 mkdir -p "$TARGET_DIR/.olaf/base-agents"
 mkdir -p "$TARGET_DIR/.olaf/learned-skills"
 mkdir -p "$TARGET_DIR/.olaf/memory"
@@ -265,20 +274,21 @@ else
     TREE_SUMMARY="."
 fi
 
-# project-brain.md dosyasını şablondan doldur
-TEMPLATE_BRAIN="$OLAF_CENTRAL_DIR/templates/project-brain-template.md"
-if [ -f "$TEMPLATE_BRAIN" ]; then
-    sed -e "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" \
-        -e "s|{{PROJECT_TYPE}}|$PROJECT_TYPE|g" \
-        -e "s|{{CREATED_AT}}|$CURRENT_DATE|g" \
-        -e "s|{{LAST_UPDATED}}|$CURRENT_DATE|g" \
-        -e "s|{{TRAINING_STATUS}}|$TRAINING_STATUS|g" \
-        -e "s|{{PROJECT_GOAL}}|$PROJECT_NAME projesinin hedefleri ve isterleri|g" \
-        -e "s|{{TARGET_AUDIENCE}}|Kullanıcılar ve Sistem İstemcileri|g" \
-        "$TEMPLATE_BRAIN" > "$TARGET_DIR/.olaf/memory/project-brain.md"
-        
-    # Tespit edilen bilgileri ekle
-    cat << EOF >> "$TARGET_DIR/.olaf/memory/project-brain.md"
+# project-brain.md dosyasını şablondan doldur (Yalnızca yeni projede; mevcut mimari hafıza korunur)
+if [ ! -f "$TARGET_DIR/.olaf/memory/project-brain.md" ]; then
+    TEMPLATE_BRAIN="$OLAF_CENTRAL_DIR/templates/project-brain-template.md"
+    if [ -f "$TEMPLATE_BRAIN" ]; then
+        sed -e "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" \
+            -e "s|{{PROJECT_TYPE}}|$PROJECT_TYPE|g" \
+            -e "s|{{CREATED_AT}}|$CURRENT_DATE|g" \
+            -e "s|{{LAST_UPDATED}}|$CURRENT_DATE|g" \
+            -e "s|{{TRAINING_STATUS}}|$TRAINING_STATUS|g" \
+            -e "s|{{PROJECT_GOAL}}|$PROJECT_NAME projesinin hedefleri ve isterleri|g" \
+            -e "s|{{TARGET_AUDIENCE}}|Kullanıcılar ve Sistem İstemcileri|g" \
+            "$TEMPLATE_BRAIN" > "$TARGET_DIR/.olaf/memory/project-brain.md"
+            
+        # Tespit edilen bilgileri ekle
+        cat << EOF >> "$TARGET_DIR/.olaf/memory/project-brain.md"
 
 ### 🔎 OLAF-INIT İLK RÖNTGEN BULGULARI:
 $DETECTED_STACK
@@ -288,6 +298,9 @@ $DETECTED_STACK
 $TREE_SUMMARY
 \`\`\`
 EOF
+    fi
+else
+    echo -e "${COLOR_GREEN}✓ Proje Beyni (project-brain.md) mevcut, mimari hafıza korundu.${COLOR_RESET}"
 fi
 
 # 7. ANTIGRAVITY VE VS CODE WORKFLOW KÖPRÜLERİNİ KUR
@@ -557,8 +570,13 @@ EOF
 fi
 
 # 12. BAŞARI RAPORU VE KULLANICI BİLGİLENDİRMESİ
+if [ "$IS_UPDATE" = true ]; then
+    HEADER_TITLE="    🎉 AI OLAF TEAM BAŞARIYLA GÜNCELLENDİ!                            "
+else
+    HEADER_TITLE="    🎉 AI OLAF TEAM BAŞARIYLA ENTEGRE EDİLDİ!                            "
+fi
 echo -e "\n${COLOR_GREEN}${COLOR_BOLD}=========================================================================="
-echo "    🎉 AI OLAF TEAM BAŞARIYLA ENTEGRE EDİLDİ!                            "
+echo "$HEADER_TITLE"
 echo -e "==========================================================================${COLOR_RESET}"
 echo -e "📁 Proje Adı       : ${COLOR_CYAN}$PROJECT_NAME${COLOR_RESET}"
 echo -e "🏷️  Proje Türü      : ${COLOR_YELLOW}$PROJECT_TYPE${COLOR_RESET}"

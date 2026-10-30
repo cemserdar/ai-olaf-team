@@ -2,7 +2,7 @@
 # ==============================================================================
 # AI OLAF TEAM - GLOBAL ALIAS VE ÇALIŞTIRMA KURULUM BETİĞİ
 # ==============================================================================
-# Bu betik, 'olaf-init' komutunu sistem genelinde (~/.local/bin, ~/.bashrc ve
+# Bu betik, 'olaf-init' ve 'olaf-update' komutlarını sistem genelinde (~/.local/bin, ~/.bashrc ve
 # ~/.zshrc) tanımlayarak herhangi bir klasörden tek kelimeyle çağrılmasını sağlar.
 # ==============================================================================
 
@@ -39,6 +39,11 @@ EOF
 chmod +x "$WRAPPER_PATH"
 echo -e "${COLOR_GREEN}✓ Doğrudan Çalıştırıcı Oluşturuldu:${COLOR_RESET} $WRAPPER_PATH"
 
+UPDATE_WRAPPER_PATH="$HOME/.local/bin/olaf-update"
+ln -sf "$WRAPPER_PATH" "$UPDATE_WRAPPER_PATH" 2>/dev/null || cp -f "$WRAPPER_PATH" "$UPDATE_WRAPPER_PATH"
+chmod +x "$UPDATE_WRAPPER_PATH" 2>/dev/null || true
+echo -e "${COLOR_GREEN}✓ Güncelleme Çalıştırıcısı Oluşturuldu:${COLOR_RESET} $UPDATE_WRAPPER_PATH"
+
 # 2. SHELL PROFİLLERİNE (BASH & ZSH) ALIAS VE ORTAM DEĞİŞKENİ EKLE
 CONFIG_SNIPPET=$(cat << EOF
 
@@ -46,6 +51,7 @@ CONFIG_SNIPPET=$(cat << EOF
 export AI_OLAF_TEAM_DIR="$REPO_DIR"
 export PATH="\$HOME/.local/bin:\$PATH"
 alias olaf-init="bash \$AI_OLAF_TEAM_DIR/scripts/olaf-init.sh"
+alias olaf-update="bash \$AI_OLAF_TEAM_DIR/scripts/olaf-init.sh"
 # <<< AI OLAF TEAM GLOBAL INTEGRATION <<<
 EOF
 )
@@ -65,7 +71,7 @@ if [ -f "$HOME/.bashrc" ]; then
         echo -e "${COLOR_YELLOW}✓ ~/.bashrc içinde zaten tanımlı, güncellenmedi.${COLOR_RESET}"
     else
         echo "$CONFIG_SNIPPET" >> "$HOME/.bashrc"
-        echo -e "${COLOR_GREEN}✓ ~/.bashrc dosyasına olaf-init alias ve PATH eklendi.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}✓ ~/.bashrc dosyasına olaf-init/olaf-update alias ve PATH eklendi.${COLOR_RESET}"
     fi
 fi
 
@@ -75,7 +81,7 @@ if [ -f "$HOME/.zshrc" ]; then
         echo -e "${COLOR_YELLOW}✓ ~/.zshrc içinde zaten tanımlı, güncellenmedi.${COLOR_RESET}"
     else
         echo "$CONFIG_SNIPPET" >> "$HOME/.zshrc"
-        echo -e "${COLOR_GREEN}✓ ~/.zshrc dosyasına olaf-init alias ve PATH eklendi.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}✓ ~/.zshrc dosyasına olaf-init/olaf-update alias ve PATH eklendi.${COLOR_RESET}"
     fi
 fi
 
@@ -83,7 +89,7 @@ fi
 if [ "$(uname -s)" = "Darwin" ] && [ -f "$HOME/.zprofile" ]; then
     if ! grep -q "AI OLAF TEAM GLOBAL INTEGRATION" "$HOME/.zprofile"; then
         echo "$CONFIG_SNIPPET" >> "$HOME/.zprofile"
-        echo -e "${COLOR_GREEN}✓ ~/.zprofile dosyasına olaf-init alias ve PATH eklendi.${COLOR_RESET}"
+        echo -e "${COLOR_GREEN}✓ ~/.zprofile dosyasına olaf-init/olaf-update alias ve PATH eklendi.${COLOR_RESET}"
     fi
 fi
 
@@ -127,7 +133,8 @@ if [ -n "$ZSH_VERSION" ] || [ "$SHELL" = "*/zsh" ]; then
 else
     echo -e "   ${COLOR_CYAN}${COLOR_BOLD}source ~/.bashrc${COLOR_RESET}"
 fi
-echo -e "\nArtık dilediğiniz herhangi bir proje klasörüne gidip sadece:"
-echo -e "   ${COLOR_GREEN}${COLOR_BOLD}olaf-init${COLOR_RESET}"
-echo -e "yazarak 15 kişilik otonom ekibi projenize anında dahil edebilirsiniz!"
+echo -e "\nArtık dilediğiniz herhangi bir proje klasörüne gidip:"
+echo -e "   - Sıfırdan kurulum için: ${COLOR_GREEN}${COLOR_BOLD}olaf-init${COLOR_RESET}"
+echo -e "   - Mevcut projeyi güncellemek için: ${COLOR_GREEN}${COLOR_BOLD}olaf-update${COLOR_RESET}"
+echo -e "yazarak 15 kişilik otonom ekibin en güncel yeteneklerini projenize dahil edebilirsiniz!"
 echo -e "${COLOR_GREEN}🛡️  Tüm projelerinizde Olaf ekip dosyaları otomatik olarak Git commit'lerinden korunur.${COLOR_RESET}\n"

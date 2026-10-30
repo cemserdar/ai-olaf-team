@@ -113,8 +113,16 @@ if ($isGitRepo) {
 }
 
 # 2. .olaf DİZİN YAPISINI OLUŞTUR
-Write-Host "`n$cBlue📂 .olaf Hafıza ve Yetenek Dizinleri Oluşturuluyor...$cReset"
 $olafDir = Join-Path $targetDir ".olaf"
+$isUpdate = Test-Path -LiteralPath $olafDir
+if ($isUpdate) {
+    Write-Host "`n$cBold$cCyan🔄 MEVCUT PROJE TESPİT EDİLDİ: AI Olaf Team Güncelleme Modunda...$cReset"
+    Write-Host "   ✓ Ajan DNA'ları (16 Ajan, Security Guardrail vb.) güncelleniyor."
+    Write-Host "   ✓ Slash iş akışları (.agent/workflows) ve IDE kuralları eşitleniyor."
+    Write-Host "   ✓ Projeye özel öğrenilmiş yetenekler (.olaf/learned-skills/) ve hafıza korunuyor."
+} else {
+    Write-Host "`n$cBlue📂 .olaf Hafıza ve Yetenek Dizinleri Oluşturuluyor...$cReset"
+}
 $baseAgentsDir = Join-Path $olafDir "base-agents"
 $learnedSkillsDir = Join-Path $olafDir "learned-skills"
 $memoryDir = Join-Path $olafDir "memory"
@@ -379,22 +387,23 @@ if ($isBrownfield) {
     $treeSummary = "."
 }
 
-# project-brain.md dosyasını şablondan doldur
+# project-brain.md dosyasını şablondan doldur (Yalnızca yeni projede; mevcut mimari hafıza korunur)
 $templateBrainPath = Join-Path $olafCentralDir "templates\project-brain-template.md"
 $brainFile = Join-Path $memoryDir "project-brain.md"
 
-if (Test-Path -LiteralPath $templateBrainPath) {
-    $brainContent = [System.IO.File]::ReadAllText($templateBrainPath, [System.Text.Encoding]::UTF8)
-    $brainContent = $brainContent.Replace("{{PROJECT_NAME}}", $projectName)
-    $brainContent = $brainContent.Replace("{{PROJECT_TYPE}}", $projectType)
-    $brainContent = $brainContent.Replace("{{CREATED_AT}}", $currentDate)
-    $brainContent = $brainContent.Replace("{{LAST_UPDATED}}", $currentDate)
-    $brainContent = $brainContent.Replace("{{TRAINING_STATUS}}", $trainingStatus)
-    $brainContent = $brainContent.Replace("{{PROJECT_GOAL}}", "$projectName projesinin hedefleri ve isterleri")
-    $brainContent = $brainContent.Replace("{{TARGET_AUDIENCE}}", "Kullanıcılar ve Sistem İstemcileri")
+if (-not (Test-Path -LiteralPath $brainFile)) {
+    if (Test-Path -LiteralPath $templateBrainPath) {
+        $brainContent = [System.IO.File]::ReadAllText($templateBrainPath, [System.Text.Encoding]::UTF8)
+        $brainContent = $brainContent.Replace("{{PROJECT_NAME}}", $projectName)
+        $brainContent = $brainContent.Replace("{{PROJECT_TYPE}}", $projectType)
+        $brainContent = $brainContent.Replace("{{CREATED_AT}}", $currentDate)
+        $brainContent = $brainContent.Replace("{{LAST_UPDATED}}", $currentDate)
+        $brainContent = $brainContent.Replace("{{TRAINING_STATUS}}", $trainingStatus)
+        $brainContent = $brainContent.Replace("{{PROJECT_GOAL}}", "$projectName projesinin hedefleri ve isterleri")
+        $brainContent = $brainContent.Replace("{{TARGET_AUDIENCE}}", "Kullanıcılar ve Sistem İstemcileri")
 
-    $codeFence = '```'
-    $brainContent += @"
+        $codeFence = '```'
+        $brainContent += @"
 
 ### 🔎 OLAF-INIT İLK RÖNTGEN BULGULARI:
 $detectedStack
@@ -403,7 +412,10 @@ $codeFence
 $treeSummary
 $codeFence
 "@
-    [System.IO.File]::WriteAllText($brainFile, $brainContent, $utf8NoBom)
+        [System.IO.File]::WriteAllText($brainFile, $brainContent, $utf8NoBom)
+    }
+} else {
+    Write-Host "$cGreen✓ Proje Beyni (project-brain.md) mevcut, mimari hafıza korundu.$cReset"
 }
 
 # 7. ANTIGRAVITY VE VS CODE WORKFLOW KÖPRÜLERİNİ KUR
@@ -708,8 +720,9 @@ fi
 }
 
 # 12. BAŞARI RAPORU VE KULLANICI BİLGİLENDİRMESİ
+$headerBanner = if ($isUpdate) { "    🎉 AI OLAF TEAM BAŞARIYLA GÜNCELLENDİ!                            " } else { "    🎉 AI OLAF TEAM BAŞARIYLA ENTEGRE EDİLDİ!                            " }
 Write-Host "`n$cBold$cGreen=========================================================================="
-Write-Host "    🎉 AI OLAF TEAM BAŞARIYLA ENTEGRE EDİLDİ!                            "
+Write-Host $headerBanner
 Write-Host "==========================================================================$cReset"
 Write-Host "📁 Proje Adı       : $cCyan$projectName$cReset"
 Write-Host "🏷️  Proje Türü      : $cYellow$projectType$cReset"

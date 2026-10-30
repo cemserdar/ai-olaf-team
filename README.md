@@ -145,7 +145,24 @@ git clone git@github.com:KULLANICI_ADINIZ/ai-olaf-team.git
 cd ai-olaf-team && .\install-windows.bat
 ```
 
-> **🔄 Senkronizasyon İpucu:** Masaüstünde bir ajanın genel DNA'sını (`base-agents/`) güncellediğinizde `git push` yapın, laptopunuza geçtiğinizde `git pull` yaparak ekibinizi her an güncel tutun!
+### 4. Adım: Halihazırda Olaf Kullanan Projeleri Güncelleme (`olaf-update`)
+
+Merkezi repoda (`ai-olaf-team`) bir ajanın DNA'sına yeni bir yetenek eklediğinizde (örneğin `@security` 20 Tehditli LLM Guardrail Çerçevesi), yeni slash komutları eklediğinizde veya kural dosyalarını güncellediğinizde:
+
+1. **Merkezi Repoyu Güncelleyin:**
+   ```bash
+   cd ~/ai-olaf-team
+   git pull origin main
+   ```
+2. **Hedef Proje Klasörüne Gidin ve Güncelleyin:**
+   ```bash
+   cd ~/Projelerim/eticaret-backend
+   olaf-update   # veya doğrudan: olaf-init
+   ```
+
+**🛡️ Akıllı ve Güvenli Güncelleme Garantisi:**
+- ✅ **Yenilenenler:** `.olaf/base-agents/` (Ajan çekirdek DNA'ları), `.agent/workflows/` (Tüm slash iş akışları), `AGENTS.md` ve `GEMINI.md` gibi IDE köprü kuralları son sürüme yükseltilir.
+- 🔒 **Kesinlikle Korunanlar:** Projenizin o ana kadar edindiği özel dinamik hafıza (`.olaf/learned-skills/`), aktif sprint panonuz (`.olaf/memory/active-sprint.md`) ve projenizin mimari beyni (`.olaf/memory/project-brain.md`) **asla ezilmez, silinmez veya sıfırlanmaz.** Projenizin geçmiş tecrübesi korunurken ekibin mesleki bilgisi güncellenir!
 
 ---
 
